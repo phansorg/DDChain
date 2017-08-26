@@ -49,6 +49,11 @@ public class PuzzleController : MonoBehaviour {
     ScoreDataV1[] scoreData;
     private int seed;
 
+    private AudioSource se1Sec;
+    private AudioSource se10Sec;
+    private bool[] se1SecFlags;
+    private bool[] se10SecFlags;
+
     //-------------------------------------------------------
     // MonoBehaviour Function
     //-------------------------------------------------------
@@ -67,6 +72,13 @@ public class PuzzleController : MonoBehaviour {
         chainFlag = false;
 
         currentState = PuzzleState.Idle;
+
+        //AudioSourceコンポーネントを取得し、変数に格納
+        AudioSource[] audioSources = GetComponents<AudioSource>();
+        se1Sec = audioSources[0];
+        se10Sec = audioSources[1];
+        se1SecFlags = new bool[6];
+        se10SecFlags = new bool[dataManager.PuzzleData.Time / 10];
     }
 
     // ゲームのメインループ
@@ -90,6 +102,30 @@ public class PuzzleController : MonoBehaviour {
             remainTime = 0;
         }
         timerText.text = remainTime.ToString("F1");
+
+        if (countTime >= 10)
+        {
+            int idx1Sec = Mathf.CeilToInt(remainTime);
+            int idx10Sec = (idx1Sec + 9) / 10 - 1;
+
+            if (idx1Sec <= 5)
+            {
+                if (se1SecFlags[idx1Sec] == false)
+                {
+                    se1SecFlags[idx1Sec] = true;
+                    se1Sec.PlayOneShot(se1Sec.clip);
+                }
+            }
+            else if (idx10Sec >= 0)
+            {
+                if (se10SecFlags[idx10Sec] == false)
+                {
+                    se10SecFlags[idx10Sec] = true;
+                    //se10Sec.PlayOneShot(se10Sec.clip);
+                    se1Sec.PlayOneShot(se1Sec.clip);
+                }
+            }
+        }
 
         switch (currentState)
         {
