@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class UserAuth : MonoBehaviour
 {
 
-    private string currentPlayerName;
+    private string currentPlayerName = string.Empty;
     private UserAuth instance = null;
 
     void Awake()
@@ -82,7 +82,7 @@ public class UserAuth : MonoBehaviour
         {
             if (e == null)
             {
-                currentPlayerName = null;
+                currentPlayerName = string.Empty;
             }
         });
     }

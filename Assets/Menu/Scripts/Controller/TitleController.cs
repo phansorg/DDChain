@@ -58,14 +58,18 @@ public class TitleController : MonoBehaviour {
         FindObjectOfType<UserAuth>().logOut();
 
         DataManager dataManager = DataManager.Instance;
+        UserAuth userAuth = FindObjectOfType<UserAuth>();
         if (dataManager.UserData.Id == string.Empty)
         {
             InitUserData();
-            FindObjectOfType<UserAuth>().signUp(dataManager.UserData.Id, dataManager.UserData.Password);
+            userAuth.signUp(dataManager.UserData.Id, dataManager.UserData.Password);
         }
         else
         {
-            FindObjectOfType<UserAuth>().logIn(dataManager.UserData.Id, dataManager.UserData.Password);
+            if (userAuth.currentPlayer() == string.Empty)
+            {
+                userAuth.logIn(dataManager.UserData.Id, dataManager.UserData.Password);
+            }
         }
         /*
         dataManager.UserData.Id = "guest";
@@ -172,7 +176,7 @@ public class TitleController : MonoBehaviour {
         pos.x += Screen.width;
         label.transform.position = pos;
 
-        for (int idx = 0; idx < LeaderBoard.RANK_MAX; idx++)
+        for (int idx = 0; idx < ScoreManager.RANK_MAX; idx++)
         {
             int dy = (int)Screen.height / 32;
 

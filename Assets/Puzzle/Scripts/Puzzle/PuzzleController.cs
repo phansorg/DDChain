@@ -50,9 +50,11 @@ public class PuzzleController : MonoBehaviour {
     private int seed;
 
     private AudioSource se1Sec;
-    private AudioSource se10Sec;
+//    private AudioSource se10Sec;
     private bool[] se1SecFlags;
     private bool[] se10SecFlags;
+
+    private bool scoreSending;
 
     //-------------------------------------------------------
     // MonoBehaviour Function
@@ -66,7 +68,8 @@ public class PuzzleController : MonoBehaviour {
         board.InitializeBoard(dataManager.PuzzleData.Col, dataManager.PuzzleData.Row);
         board.HasMatch();
 
-        startTime = dataManager.PuzzleData.Time;
+//        startTime = dataManager.PuzzleData.Time;
+        startTime = 10;
         countTime = 0;
         remainTime = 0;
         chainFlag = false;
@@ -76,9 +79,11 @@ public class PuzzleController : MonoBehaviour {
         //AudioSourceコンポーネントを取得し、変数に格納
         AudioSource[] audioSources = GetComponents<AudioSource>();
         se1Sec = audioSources[0];
-        se10Sec = audioSources[1];
+//        se10Sec = audioSources[1];
         se1SecFlags = new bool[6];
         se10SecFlags = new bool[dataManager.PuzzleData.Time / 10];
+
+        scoreSending = false;
     }
 
     // ゲームのメインループ
@@ -171,6 +176,7 @@ public class PuzzleController : MonoBehaviour {
         DataManager dataManager = DataManager.Instance;
         scoreData = new ScoreDataV1[ScoreDataV1.SCORE_KIND_MAX];
 
+        ScoreManager scoreManager = ScoreManager.Instance;
         for (int scoreKind = 0; scoreKind < scoreData.Length; scoreKind++)
         {
             scoreData[scoreKind] = new ScoreDataV1();
@@ -188,7 +194,7 @@ public class PuzzleController : MonoBehaviour {
             scoreData[scoreKind].Garbage = dataManager.PuzzleData.Garbage;
 
             scoreData[scoreKind].ScoreKindValue = scoreKind;
-            scoreData[scoreKind].fetch();
+            scoreManager.getScore(scoreData[scoreKind]);
         }
 
         seed = (int)((DateTime.Now.ToBinary() + dataManager.PuzzleData.WriteCount) % int.MaxValue);
@@ -369,30 +375,36 @@ public class PuzzleController : MonoBehaviour {
 
     private IEnumerator ProcScoreData(Action endCallBack)
     {
-        DataManager dataManager = DataManager.Instance;
-
-        int[] colorScore = new int[ScoreDataV1.SCORE_KIND_MAX];
-        long playDateTime = DateTime.Now.ToBinary();
-
-        foreach (int score in board.score)
+        if (scoreSending == false)
         {
-            colorScore[(int)ScoreDataV1.ScoreKind.AllColor] += score;
-            if (colorScore[(int)ScoreDataV1.ScoreKind.SingleColor] < score)
+            DataManager dataManager = DataManager.Instance;
+
+            int[] colorScore = new int[ScoreDataV1.SCORE_KIND_MAX];
+            long playDateTime = DateTime.Now.ToBinary();
+
+            foreach (int score in board.score)
             {
-                colorScore[(int)ScoreDataV1.ScoreKind.SingleColor] = score;
+                colorScore[(int)ScoreDataV1.ScoreKind.AllColor] += score;
+                if (colorScore[(int)ScoreDataV1.ScoreKind.SingleColor] < score)
+                {
+                    colorScore[(int)ScoreDataV1.ScoreKind.SingleColor] = score;
+                }
             }
+
+            ScoreManager scoreManager = ScoreManager.Instance;
+            for (int scoreKind = 0; scoreKind < scoreData.Length; scoreKind++)
+            {
+                if (colorScore[scoreKind] > scoreManager.highScore[scoreKind])
+                {
+                    scoreData[scoreKind].Score = colorScore[scoreKind];
+                    scoreData[scoreKind].PlayDateTime = playDateTime;
+                    scoreManager.save(scoreData[scoreKind]);
+                }
+            }
+            
         }
 
-        for (int scoreKind = 0; scoreKind < scoreData.Length; scoreKind++)
-        {
-            if (colorScore[scoreKind] > scoreData[scoreKind].Score)
-            {
-                scoreData[scoreKind].Score = colorScore[scoreKind];
-                scoreData[scoreKind].PlayDateTime = playDateTime;
-                scoreData[scoreKind].save();
-            }
-        }
-
+        scoreSending = true;
         yield return new WaitForSeconds(1);
         endCallBack();
     }

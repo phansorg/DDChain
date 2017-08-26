@@ -6,17 +6,11 @@ using UnityEngine.SceneManagement;
 
 public class HighScoreButton : MonoBehaviour
 {
-    LeaderBoard[] leaderBoard;
     string[] NameLabel = { "AllColorNameLabel", "SingleColorNameLabel" };
     string[] ScoreLabel = { "AllColorScoreLabel", "SingleColorScoreLabel" };
 
     public void Start()
     {
-        leaderBoard = new LeaderBoard[ScoreDataV1.SCORE_KIND_MAX];
-        for (int scoreKind = 0; scoreKind < ScoreDataV1.SCORE_KIND_MAX; scoreKind++)
-        {
-            leaderBoard[scoreKind] = new LeaderBoard();
-        }
     }
 
     public void Update()
@@ -24,13 +18,14 @@ public class HighScoreButton : MonoBehaviour
         Text label;
         Vector3 pos;
 
+        ScoreManager scoreManager = ScoreManager.Instance;
         for (int scoreKind = 0; scoreKind < ScoreDataV1.SCORE_KIND_MAX; scoreKind++)
         {
-            if (leaderBoard[scoreKind].fetchFlag == false)
+            if (scoreManager.fetchData[scoreKind].flag == false)
             {
                 continue;
             }
-            leaderBoard[scoreKind].fetchFlag = false;
+            scoreManager.fetchData[scoreKind].flag = false;
 
             label = GameObject.Find("AllColorLabel").GetComponent<Text>();
             pos = label.transform.position;
@@ -42,16 +37,16 @@ public class HighScoreButton : MonoBehaviour
             pos.x %= Screen.width;
             label.transform.position = pos;
 
-            for (int idx = 0; idx < LeaderBoard.RANK_MAX; idx++)
+            for (int idx = 0; idx < ScoreManager.RANK_MAX; idx++)
             {
                 label = GameObject.Find(NameLabel[scoreKind] + idx).GetComponent<Text>();
-                label.text = leaderBoard[scoreKind].scoreDataList[idx].Name;
+                label.text = scoreManager.fetchData[scoreKind].scoreDataList[idx].Name;
                 pos = label.transform.position;
                 pos.x %= Screen.width;
                 label.transform.position = pos;
 
                 label = GameObject.Find(ScoreLabel[scoreKind] + idx).GetComponent<Text>();
-                label.text = "" + leaderBoard[scoreKind].scoreDataList[idx].Score;
+                label.text = "" + scoreManager.fetchData[scoreKind].scoreDataList[idx].Score;
                 pos = label.transform.position;
                 pos.x %= Screen.width;
                 label.transform.position = pos;
@@ -78,11 +73,12 @@ public class HighScoreButton : MonoBehaviour
         param.Stop = dataManager.PuzzleData.Stop;
         param.CountDisp = dataManager.PuzzleData.CountDisp;
         param.Garbage = dataManager.PuzzleData.Garbage;
-        
+
+        ScoreManager scoreManager = ScoreManager.Instance;
         for (int scoreKind = 0; scoreKind < ScoreDataV1.SCORE_KIND_MAX; scoreKind++)
         {
             param.ScoreKindValue = scoreKind;
-            leaderBoard[scoreKind].fetchTopRankers(param);
+            scoreManager.fetchTopRankers(scoreKind, param);
         }
 
     }

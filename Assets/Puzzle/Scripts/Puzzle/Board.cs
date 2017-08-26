@@ -609,7 +609,7 @@ public class Board : MonoBehaviour
     // 特定のピースのが削除されているかを判断し、削除されているなら詰める
     private void DropBlock(Vector2 pos)
     {
-        var block = board[(int)pos.x, (int)pos.y];
+        //var block = board[(int)pos.x, (int)pos.y];
 
         // 対象のピースより上方向に有効なピースがあるかを確認、あるなら場所を移動させる
         var checkPos = pos + Vector2.up;
