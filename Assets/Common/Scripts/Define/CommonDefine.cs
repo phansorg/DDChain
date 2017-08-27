@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CommonDefine : MonoBehaviour {
 
+    public const int VERSION = 105;
     public const int COLOR_MAX = 5;
 
 }

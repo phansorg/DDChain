@@ -5,21 +5,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class HighScoreButton : MonoBehaviour
+public class OldScoreButton : MonoBehaviour
 {
-    public static List<ReplayDataV1>[] replayData;
-
     public void Start()
     {
-        replayData = new List<ReplayDataV1>[ScoreDataV1.SCORE_KIND_MAX];
-        for (int scoreKind = 0; scoreKind < ScoreDataV1.SCORE_KIND_MAX; scoreKind++)
-        {
-            replayData[scoreKind] = new List<ReplayDataV1>();
-            for (int idx = 0; idx < ScoreManager.RANK_MAX; idx++)
-            {
-                replayData[scoreKind].Add(new ReplayDataV1());
-            }
-        }
     }
 
     public void Update()
@@ -30,7 +19,7 @@ public class HighScoreButton : MonoBehaviour
         ScoreManager scoreManager = ScoreManager.Instance;
         for (int scoreKind = 0; scoreKind < ScoreDataV1.SCORE_KIND_MAX; scoreKind++)
         {
-            if (scoreManager.version == 0 ||
+            if (scoreManager.version != 0 ||
                 scoreManager.fetchData[scoreKind].flag == false)
             {
                 continue;
@@ -56,7 +45,7 @@ public class HighScoreButton : MonoBehaviour
             {
                 // スコア表示
                 button = GameObject.Find(TitleController.ReplayButtonName[scoreKind] + idx).GetComponent<Button>();
-                SetPosition(button.transform, true);
+                SetPosition(button.transform, false);
 
                 label = GameObject.Find(TitleController.NameLabelName[scoreKind] + idx).GetComponent<Text>();
                 label.text = scoreManager.fetchData[scoreKind].scoreDataList[idx].Name;
@@ -65,27 +54,10 @@ public class HighScoreButton : MonoBehaviour
                 label = GameObject.Find(TitleController.ScoreLabelName[scoreKind] + idx).GetComponent<Text>();
                 label.text = "" + scoreManager.fetchData[scoreKind].scoreDataList[idx].Score;
                 SetPosition(label.transform, true);
-
-                // リプレイデータ
-                List<ReplayDataV1> replayDataWork = replayData[scoreKind];
-
-                replayDataWork[idx].Version = scoreManager.fetchData[scoreKind].scoreDataList[idx].Version;
-                replayDataWork[idx].Id = scoreManager.fetchData[scoreKind].scoreDataList[idx].Id;
-                replayDataWork[idx].PlayDateTime = scoreManager.fetchData[scoreKind].scoreDataList[idx].PlayDateTime;
-                replayDataWork[idx].ScoreKindValue = scoreManager.fetchData[scoreKind].scoreDataList[idx].ScoreKindValue;
-
-                replayDataWork[idx].Row = scoreManager.fetchData[scoreKind].scoreDataList[idx].Row;
-                replayDataWork[idx].Col = scoreManager.fetchData[scoreKind].scoreDataList[idx].Col;
-                replayDataWork[idx].Color = scoreManager.fetchData[scoreKind].scoreDataList[idx].Color;
-                replayDataWork[idx].Link = scoreManager.fetchData[scoreKind].scoreDataList[idx].Link;
-                replayDataWork[idx].Direction = scoreManager.fetchData[scoreKind].scoreDataList[idx].Direction;
-                replayDataWork[idx].Time = scoreManager.fetchData[scoreKind].scoreDataList[idx].Time;
-                replayDataWork[idx].Stop = scoreManager.fetchData[scoreKind].scoreDataList[idx].Stop;
-                replayDataWork[idx].CountDisp = scoreManager.fetchData[scoreKind].scoreDataList[idx].CountDisp;
-                replayDataWork[idx].Garbage = scoreManager.fetchData[scoreKind].scoreDataList[idx].Garbage;
             }
         }
     }
+
 
     public void OnClick()
     {
@@ -106,7 +78,7 @@ public class HighScoreButton : MonoBehaviour
         param.Stop = dataManager.PuzzleData.Stop;
         param.CountDisp = dataManager.PuzzleData.CountDisp;
         param.Garbage = dataManager.PuzzleData.Garbage;
-        param.Version = CommonDefine.VERSION;
+        param.Version = 0;
 
         ScoreManager scoreManager = ScoreManager.Instance;
         for (int scoreKind = 0; scoreKind < ScoreDataV1.SCORE_KIND_MAX; scoreKind++)

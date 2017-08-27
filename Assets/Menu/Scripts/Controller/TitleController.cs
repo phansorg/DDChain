@@ -6,6 +6,13 @@ using UnityEngine.UI;
 
 public class TitleController : MonoBehaviour {
 
+    public static string[] LabelName = { "AllColorLabel", "SingleColorLabel" };
+    public static string[] ReplayButtonName = { "AllColorReplayButton_", "SingleColorReplayButton_" };
+    public static string[] NameLabelName = { "AllColorNameLabel_", "SingleColorNameLabel_" };
+    public static string[] ScoreLabelName = { "AllColorScoreLabel_", "SingleColorScoreLabel_" };
+    public static string[] scoreKindName = { "AllColor", "SingleColor" };
+
+
     private const string PASSWORD_CHARS = "0123456789abcdefghijklmnopqrstuvwxyz";
 
     public static void WriteData()
@@ -166,64 +173,41 @@ public class TitleController : MonoBehaviour {
         Vector3 pos;
         GameObject canvas = GameObject.Find("Canvas");
 
-        label = GameObject.Find("AllColorLabel");
+        label = GameObject.Find(LabelName[0]);
         pos = label.transform.position;
         pos.x += Screen.width;
         label.transform.position = pos;
 
-        label = GameObject.Find("SingleColorLabel");
+        label = GameObject.Find(LabelName[1]);
         pos = label.transform.position;
         pos.x += Screen.width;
         label.transform.position = pos;
 
         for (int idx = 0; idx < ScoreManager.RANK_MAX; idx++)
         {
-            int dy = (int)Screen.height / 32;
+            Action<string, string, int, int> InitObject = (prefabName, objectName, posX, posY) =>
+            {
+                GameObject gameObject;
 
-            // AllColorNameLabel
-            prefab = (GameObject)Resources.Load("Prefabs/NameLabel");
-            label = (GameObject)Instantiate(prefab);
-            label.name = "AllColorNameLabel" + idx;
-            label.transform.SetParent(canvas.transform, false);
+                prefab = (GameObject)Resources.Load(prefabName);
+                gameObject = (GameObject)Instantiate(prefab);
+                gameObject.name = objectName;
+                gameObject.transform.SetParent(canvas.transform, false);
 
-            pos = label.transform.position;
-            pos.x += Screen.width;
-            pos.y -= idx * dy;
-            label.transform.position = pos;
+                pos = gameObject.transform.position;
+                pos.x += posX;
+                pos.y -= posY;
+                gameObject.transform.position = pos;
+            };
 
-            // AllColorScoreLabel
-            prefab = (GameObject)Resources.Load("Prefabs/ScoreLabel");
-            label = (GameObject)Instantiate(prefab);
-            label.name = "AllColorScoreLabel" + idx;
-            label.transform.SetParent(canvas.transform, false);
+            int dy = (int)Screen.height / 31;
 
-            pos = label.transform.position;
-            pos.x += Screen.width;
-            pos.y -= idx * dy;
-            label.transform.position = pos;
-
-            // SingleColorNameLabel
-            prefab = (GameObject)Resources.Load("Prefabs/NameLabel");
-            label = (GameObject)Instantiate(prefab);
-            label.name = "SingleColorNameLabel" + idx;
-            label.transform.SetParent(canvas.transform, false);
-
-            pos = label.transform.position;
-            pos.x += (int)(Screen.width * 1.45);
-            pos.y -= idx * dy;
-            label.transform.position = pos;
-
-            // SingleColorScoreLabel
-            prefab = (GameObject)Resources.Load("Prefabs/ScoreLabel");
-            label = (GameObject)Instantiate(prefab);
-            label.name = "SingleColorScoreLabel" + idx;
-            label.transform.SetParent(canvas.transform, false);
-
-            pos = label.transform.position;
-            pos.x += (int)(Screen.width * 1.45);
-            pos.y -= idx * dy;
-            label.transform.position = pos;
-
+            InitObject("Prefabs/ReplayButton", ReplayButtonName[0] + idx, Screen.width, idx * dy);
+            InitObject("Prefabs/NameLabel", NameLabelName[0] + idx, Screen.width, idx * dy);
+            InitObject("Prefabs/ScoreLabel", ScoreLabelName[0] + idx, Screen.width, idx * dy);
+            InitObject("Prefabs/ReplayButton", ReplayButtonName[1] + idx, (int)(Screen.width * 1.45), idx * dy);
+            InitObject("Prefabs/NameLabel", NameLabelName[1] + idx, (int)(Screen.width * 1.45), idx * dy);
+            InitObject("Prefabs/ScoreLabel", ScoreLabelName[1] + idx, (int)(Screen.width * 1.45), idx * dy);
         }
     }
 }

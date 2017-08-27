@@ -1,5 +1,4 @@
-﻿using NCMB;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ZeroFormatter;
 
 [ZeroFormattable]
@@ -59,7 +58,7 @@ public class ScoreDataV1
     public virtual int Garbage { get; set; }
 
     [Index(14)]
-    public virtual int Reserved14 { get; set; }
+    public virtual int Version { get; set; }
 
     [Index(15)]
     public virtual int Reserved15 { get; set; }
@@ -93,7 +92,7 @@ public class ScoreDataV1
         Stop = 0;
         CountDisp = 0;
         Garbage = 0;
-        Reserved14 = 0;
+        Version = 0;
         Reserved15 = 0;
         Reserved16 = 0;
         Reserved17 = 0;

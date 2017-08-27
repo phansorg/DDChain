@@ -33,7 +33,7 @@ public class Board : MonoBehaviour
     public int[] score;
 
     // private.
-    private Block[,] board;
+    public Block[,] board;
     private int width;
     private int height;
     private int randomSeed;
@@ -440,13 +440,13 @@ public class Board : MonoBehaviour
     }
 
     // 盤面上の位置からピースオブジェクトのワールド座標での位置を返す
-    private Vector3 GetBlockWorldPos(Vector2 boardPos)
+    public Vector3 GetBlockWorldPos(Vector2 boardPos)
     {
         return new Vector3(boardPos.x * blockWidth + (blockWidth / 2), boardPos.y * blockWidth + (blockWidth / 2) + Screen.height * PaddingBottom, 0);
     }
 
     // ピースが盤面上のどの位置にあるのかを返す
-    private Vector2 GetBlockBoardPos(Block block)
+    public Vector2 GetBlockBoardPos(Block block)
     {
         for (int i = 0; i < width; i++)
         {

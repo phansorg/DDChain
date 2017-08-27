@@ -14,6 +14,9 @@ public class DataManager : MonoBehaviour {
     private string PuzzleDataFilePath;
     public PuzzleDataV1 PuzzleData;
 
+    private string ReplayDataFilePath;
+    public ReplayDataV1 ReplayData;
+
     public static DataManager Instance
     {
         get;
@@ -53,11 +56,29 @@ public class DataManager : MonoBehaviour {
             PuzzleData = new PuzzleDataV1();
         }
 
+        Formatter<DefaultResolver, ReplayDataV1>.Register(new ReplayDataV1Formatter<DefaultResolver>());
+        ReplayDataFilePath = Path.Combine(Application.persistentDataPath, ReplayDataV1.REPLAY_DATA_FILE_NAME);
+        if (File.Exists(ReplayDataFilePath))
+        {
+            ReplayData = ZeroFormatterSerializer.Deserialize<ReplayDataV1>(File.ReadAllBytes(ReplayDataFilePath));
+        }
+        else
+        {
+            ReplayData = new ReplayDataV1();
+        }
+
     }
 
     public void Write()
     {
         File.WriteAllBytes(UserDataFilePath, ZeroFormatterSerializer.Serialize(UserData));
         File.WriteAllBytes(PuzzleDataFilePath, ZeroFormatterSerializer.Serialize(PuzzleData));
+        ReplayData.Version = 0;
+        File.WriteAllBytes(ReplayDataFilePath, ZeroFormatterSerializer.Serialize(ReplayData));
+    }
+
+    public void WriteReplay()
+    {
+        File.WriteAllBytes(ReplayDataFilePath, ZeroFormatterSerializer.Serialize(ReplayData));
     }
 }

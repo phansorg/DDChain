@@ -25,6 +25,13 @@ public class PuzzleController : MonoBehaviour {
         Result,
     }
 
+    private enum InputType
+    {
+        Select = 0,
+        Move,
+        Release,
+    }
+
     // serialize field.
     [SerializeField]
     private Board board;
@@ -47,7 +54,12 @@ public class PuzzleController : MonoBehaviour {
     private int ReleaseCount;
 
     ScoreDataV1[] scoreData;
-    private int seed;
+    ReplayDataV1[] replayData;
+    private int frame;
+    private List<int> inputFrame;
+    private List<byte> inputType;
+    private List<byte> inputData1;
+    private List<byte> inputData2;
 
     private AudioSource se1Sec;
 //    private AudioSource se10Sec;
@@ -56,15 +68,21 @@ public class PuzzleController : MonoBehaviour {
 
     private bool scoreSending;
 
+    private bool replay;
+    private int replayIdx;
+
     //-------------------------------------------------------
     // MonoBehaviour Function
     //-------------------------------------------------------
     // ゲームの初期化処理
     private void Start()
     {
+        DataManager dataManager = DataManager.Instance;
+        replay = (dataManager.ReplayData.Version != 0);
+        Debug.Log("replay:" + replay);
+
         InitScoreData();
 
-        DataManager dataManager = DataManager.Instance;
         board.InitializeBoard(dataManager.PuzzleData.Col, dataManager.PuzzleData.Row);
         board.HasMatch();
 
@@ -84,6 +102,8 @@ public class PuzzleController : MonoBehaviour {
         se10SecFlags = new bool[dataManager.PuzzleData.Time / 10];
 
         scoreSending = false;
+
+        replayIdx = 0;
     }
 
     // ゲームのメインループ
@@ -98,40 +118,58 @@ public class PuzzleController : MonoBehaviour {
         }
         else
         {
-            countTime += Time.deltaTime;
-        }
-
-        remainTime = startTime - countTime;
-        if (remainTime < 0)
-        {
-            remainTime = 0;
-        }
-        timerText.text = remainTime.ToString("F1");
-
-        if (countTime >= 10)
-        {
-            int idx1Sec = Mathf.CeilToInt(remainTime);
-            int idx10Sec = (idx1Sec + 9) / 10 - 1;
-
-            if (idx1Sec <= 5)
+            if (currentState != PuzzleState.SendScoreData &&
+                currentState != PuzzleState.Result)
             {
-                if (se1SecFlags[idx1Sec] == false)
-                {
-                    se1SecFlags[idx1Sec] = true;
-                    se1Sec.PlayOneShot(se1Sec.clip);
-                }
-            }
-            else if (idx10Sec >= 0)
-            {
-                if (se10SecFlags[idx10Sec] == false)
-                {
-                    se10SecFlags[idx10Sec] = true;
-                    //se10Sec.PlayOneShot(se10Sec.clip);
-                    se1Sec.PlayOneShot(se1Sec.clip);
-                }
+                countTime += Time.deltaTime;
+                frame++;
             }
         }
 
+        if (replay)
+        {
+            remainTime = replayData[0].FrameCount - frame;
+            if (remainTime < 0)
+            {
+                remainTime = 0;
+            }
+            timerText.text = remainTime.ToString() + " Frame";
+        }
+        else
+        {
+            remainTime = startTime - countTime;
+            if (remainTime < 0)
+            {
+                remainTime = 0;
+            }
+            timerText.text = remainTime.ToString("F1") + " Sec";
+
+            if (countTime >= 10)
+            {
+                int idx1Sec = Mathf.CeilToInt(remainTime);
+                int idx10Sec = (idx1Sec + 9) / 10 - 1;
+
+                if (idx1Sec <= 5)
+                {
+                    if (se1SecFlags[idx1Sec] == false)
+                    {
+                        se1SecFlags[idx1Sec] = true;
+                        se1Sec.PlayOneShot(se1Sec.clip);
+                    }
+                }
+                else if (idx10Sec >= 0)
+                {
+                    if (se10SecFlags[idx10Sec] == false)
+                    {
+                        se10SecFlags[idx10Sec] = true;
+                        //se10Sec.PlayOneShot(se10Sec.clip);
+                        se1Sec.PlayOneShot(se1Sec.clip);
+                    }
+                }
+            }
+        }
+
+        // currentStateによる処理の切り分け(遷移も発生)
         switch (currentState)
         {
             case PuzzleState.Idle:
@@ -175,6 +213,17 @@ public class PuzzleController : MonoBehaviour {
     {
         DataManager dataManager = DataManager.Instance;
         scoreData = new ScoreDataV1[ScoreDataV1.SCORE_KIND_MAX];
+        replayData = new ReplayDataV1[ScoreDataV1.SCORE_KIND_MAX];
+
+        int seed;
+        if (replay)
+        {
+            seed = dataManager.ReplayData.Seed;
+        }
+        else
+        {
+            seed = (int)((DateTime.Now.ToBinary() + dataManager.PuzzleData.WriteCount) % int.MaxValue);
+        }
 
         ScoreManager scoreManager = ScoreManager.Instance;
         for (int scoreKind = 0; scoreKind < scoreData.Length; scoreKind++)
@@ -192,12 +241,39 @@ public class PuzzleController : MonoBehaviour {
             scoreData[scoreKind].Stop = dataManager.PuzzleData.Stop;
             scoreData[scoreKind].CountDisp = dataManager.PuzzleData.CountDisp;
             scoreData[scoreKind].Garbage = dataManager.PuzzleData.Garbage;
+            scoreData[scoreKind].Version = CommonDefine.VERSION;
 
             scoreData[scoreKind].ScoreKindValue = scoreKind;
             scoreManager.getScore(scoreData[scoreKind]);
+
+            if (replay)
+            {
+                replayData[scoreKind] = dataManager.ReplayData;
+                continue;
+            }
+
+            replayData[scoreKind] = new ReplayDataV1();
+            replayData[scoreKind].Version = CommonDefine.VERSION;
+            replayData[scoreKind].Id = dataManager.UserData.Id;
+            replayData[scoreKind].ScoreKindValue = scoreKind;
+            replayData[scoreKind].Seed = seed;
+            replayData[scoreKind].Row = dataManager.PuzzleData.Row;
+            replayData[scoreKind].Col = dataManager.PuzzleData.Col;
+            replayData[scoreKind].Color = dataManager.PuzzleData.Color;
+            replayData[scoreKind].Link = dataManager.PuzzleData.Link;
+            replayData[scoreKind].Direction = dataManager.PuzzleData.Direction;
+            replayData[scoreKind].Time = dataManager.PuzzleData.Time;
+            replayData[scoreKind].Stop = dataManager.PuzzleData.Stop;
+            replayData[scoreKind].CountDisp = dataManager.PuzzleData.CountDisp;
+            replayData[scoreKind].Garbage = dataManager.PuzzleData.Garbage;
         }
 
-        seed = (int)((DateTime.Now.ToBinary() + dataManager.PuzzleData.WriteCount) % int.MaxValue);
+        UnityEngine.Random.seed = seed;
+        frame = 0;
+        inputFrame = new List<int>();
+        inputType = new List<byte>();
+        inputData1 = new List<byte>();
+        inputData2 = new List<byte>();
     }
 
     // プレイヤーの入力を検知し、ピースを選択状態にする
@@ -205,14 +281,34 @@ public class PuzzleController : MonoBehaviour {
     {
         if (remainTime == 0)
         {
-            currentState = PuzzleState.SendScoreData;
+            if (replay)
+            {
+                currentState = PuzzleState.Result;
+            }
+            else
+            {
+                currentState = PuzzleState.SendScoreData;
+            }
         }
         else
         {
-            GodPhase phase = GodTouch.GetPhase();
-            if (phase == GodPhase.Began)
+            if (replay)
             {
-                SelectBlock();
+                if (replayIdx < replayData[0].InputCount &&
+                    replayData[0].InputFrame[replayIdx] == frame &&
+                    replayData[0].InputType[replayIdx] == (byte)InputType.Select)
+                {
+                    SelectBlock();
+                }
+            }
+            else
+            {
+                GodPhase phase = GodTouch.GetPhase();
+                if (phase == GodPhase.Began)
+                {
+                    SelectBlock();
+                }
+
             }
         }
 
@@ -224,28 +320,57 @@ public class PuzzleController : MonoBehaviour {
     {
         if (remainTime == 0)
         {
-            selectedBlock.SetBlockAlpha(1f);
-            selectedBlock.selectFlag = false;
-            Destroy(movingBlockObject);
-            currentState = PuzzleState.MatchCheck;
+            ReleaseBlock();
         }
         else
         {
-            GodPhase phase = GodTouch.GetPhase();
-            if (phase == GodPhase.Moved)
+            if (replay)
             {
-                var Block = board.GetNearestBlock(GodTouch.GetPosition());
-                if (Block != selectedBlock)
+                if (replayIdx < replayData[0].InputCount &&
+                    replayData[0].InputFrame[replayIdx] == frame)
                 {
-                    board.SwitchBlock(selectedBlock, Block);
+                    if (replayData[0].InputType[replayIdx] == (byte)InputType.Move)
+                    {
+                        // ボードの処理
+                        Vector3 inputPos = board.GetBlockWorldPos(new Vector2(replayData[0].InputData1[replayIdx], replayData[0].InputData2[replayIdx]));
+                        Block block = board.board[replayData[0].InputData1[replayIdx], replayData[0].InputData2[replayIdx]];
+                        board.SwitchBlock(selectedBlock, block);
+                        movingBlockObject.transform.position = inputPos + Vector3.up * 10;
+                        replayIdx++;
+                    }
+                    else if (replayData[0].InputType[replayIdx] == (byte)InputType.Release)
+                    {
+                        ReleaseBlock();
+                        replayIdx++;
+                    }
                 }
-                movingBlockObject.transform.position = GodTouch.GetPosition() + Vector3.up * 10;
-
             }
-            else if (phase == GodPhase.Ended)
+            else
             {
-                ReleaseCount = 0;
-                currentState = PuzzleState.ReleaseWait;
+                GodPhase phase = GodTouch.GetPhase();
+                if (phase == GodPhase.Moved)
+                {
+                    Block block = board.GetNearestBlock(GodTouch.GetPosition());
+                    if (block != selectedBlock)
+                    {
+                        // リプレイの処理
+                        inputFrame.Add(frame);
+                        inputType.Add((int)InputType.Move);
+                        Vector2 pos = board.GetBlockBoardPos(block);
+                        inputData1.Add((byte)pos.x);
+                        inputData2.Add((byte)pos.y);
+
+                        // ボードの処理
+                        board.SwitchBlock(selectedBlock, block);
+                    }
+                    movingBlockObject.transform.position = GodTouch.GetPosition() + Vector3.up * 10;
+
+                }
+                else if (phase == GodPhase.Ended)
+                {
+                    ReleaseCount = 0;
+                    currentState = PuzzleState.ReleaseWait;
+                }
             }
         }
 
@@ -266,10 +391,7 @@ public class PuzzleController : MonoBehaviour {
             stateText.text = string.Format("RC:{0} RM:{1} itween:{2}", ReleaseCount, ReleaseCountMax, iTween.tweens.Count);
             if (ReleaseCount > ReleaseCountMax && iTween.tweens.Count == 0)
             {
-                selectedBlock.SetBlockAlpha(1f);
-                selectedBlock.selectFlag = false;
-                Destroy(movingBlockObject);
-                currentState = PuzzleState.MatchCheck;
+                ReleaseBlock();
             }
             else
             {
@@ -356,21 +478,57 @@ public class PuzzleController : MonoBehaviour {
     // ピースを選択する処理
     private void SelectBlock()
     {
-        selectedBlock = board.GetNearestBlock(GodTouch.GetPosition());
-        if (selectedBlock.garbageKind != GarbageKind.None)
+        Vector3 inputPos;
+        if (replay)
         {
-            return;
+            inputPos = board.GetBlockWorldPos(new Vector2(replayData[0].InputData1[replayIdx], replayData[0].InputData2[replayIdx]));
+            selectedBlock = board.board[replayData[0].InputData1[replayIdx], replayData[0].InputData2[replayIdx]];
+            replayIdx++;
+        }
+        else
+        {
+            inputPos = GodTouch.GetPosition();
+            selectedBlock = board.GetNearestBlock(inputPos);
+            if (selectedBlock.garbageKind != GarbageKind.None)
+            {
+                return;
+            }
+
+            // リプレイの処理
+            inputFrame.Add(frame);
+            inputType.Add((int)InputType.Select);
+            Vector2 pos = board.GetBlockBoardPos(selectedBlock);
+            inputData1.Add((byte)pos.x);
+            inputData2.Add((byte)pos.y);
         }
 
+        // ボードの処理
         selectedBlock.SetBlockAlpha(0f);
         selectedBlock.selectFlag = true;
 
-        var block = board.InstantiateBlock(GodTouch.GetPosition());
+        var block = board.InstantiateBlock(inputPos);
         block.SetKind(selectedBlock.GetKind());
         block.SetSize((int)(board.blockWidth * 1.2f));
         movingBlockObject = block.gameObject;
 
         currentState = PuzzleState.BlockMove;
+    }
+
+    // ピースをリリースする処理
+    private void ReleaseBlock()
+    {
+        // リプレイの処理
+        inputFrame.Add(frame);
+        inputType.Add((int)InputType.Release);
+        Vector2 pos = board.GetBlockBoardPos(selectedBlock);
+        inputData1.Add((byte)pos.x);
+        inputData2.Add((byte)pos.y);
+
+        // ボードの処理
+        selectedBlock.SetBlockAlpha(1f);
+        selectedBlock.selectFlag = false;
+        Destroy(movingBlockObject);
+        currentState = PuzzleState.MatchCheck;
     }
 
     private IEnumerator ProcScoreData(Action endCallBack)
@@ -382,6 +540,7 @@ public class PuzzleController : MonoBehaviour {
             int[] colorScore = new int[ScoreDataV1.SCORE_KIND_MAX];
             long playDateTime = DateTime.Now.ToBinary();
 
+            // 各色のスコアデータを集計
             foreach (int score in board.score)
             {
                 colorScore[(int)ScoreDataV1.ScoreKind.AllColor] += score;
@@ -391,17 +550,35 @@ public class PuzzleController : MonoBehaviour {
                 }
             }
 
+            // スコア更新しているなら送信
             ScoreManager scoreManager = ScoreManager.Instance;
             for (int scoreKind = 0; scoreKind < scoreData.Length; scoreKind++)
             {
                 if (colorScore[scoreKind] > scoreManager.highScore[scoreKind])
                 {
+                    // スコア
                     scoreData[scoreKind].Score = colorScore[scoreKind];
                     scoreData[scoreKind].PlayDateTime = playDateTime;
                     scoreManager.save(scoreData[scoreKind]);
+
+                    // リプレイ
+                    replayData[scoreKind].PlayDateTime = playDateTime;
+                    replayData[scoreKind].FrameCount = frame;
+                    replayData[scoreKind].InputCount = inputType.Count;
+                    replayData[scoreKind].InputFrame = inputFrame.ToArray();
+                    replayData[scoreKind].InputType = inputType.ToArray();
+                    replayData[scoreKind].InputData1 = inputData1.ToArray();
+                    replayData[scoreKind].InputData2 = inputData2.ToArray();
+                    /*
+                    Debug.Log("FrameCount:" + replayData[scoreKind].FrameCount + " InputCount:" + replayData[scoreKind].InputCount);
+                    for (int i = 0; i < replayData.InputType.Length; i++)
+                    {
+                        Debug.Log("i:" + i + " InputFrame:" + replayData[scoreKind].InputFrame[i] + " InputType:" + replayData[scoreKind].InputType[i] + " InputData1:" + replayData[scoreKind].InputData1[i] + " InputData2:" + replayData[scoreKind].InputData2[i]);
+                    }
+                     */
+                    scoreManager.saveReplay(replayData[scoreKind]);
                 }
             }
-            
         }
 
         scoreSending = true;
