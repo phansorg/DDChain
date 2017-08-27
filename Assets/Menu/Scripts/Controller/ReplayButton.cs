@@ -20,6 +20,12 @@ public class ReplayButton : MonoBehaviour
         }
         scoreManager.fetchReplayData.flag = false;
 
+        if (scoreManager.fetchReplayData.replayData == null ||
+            scoreManager.fetchReplayData.replayData.Version == 0)
+        {
+            return;
+        }
+
         DataManager dataManager = DataManager.Instance;
         dataManager.ReplayData = scoreManager.fetchReplayData.replayData;
 

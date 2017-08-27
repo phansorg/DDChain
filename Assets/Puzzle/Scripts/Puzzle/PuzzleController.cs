@@ -86,8 +86,8 @@ public class PuzzleController : MonoBehaviour {
         board.InitializeBoard(dataManager.PuzzleData.Col, dataManager.PuzzleData.Row);
         board.HasMatch();
 
-//        startTime = dataManager.PuzzleData.Time;
-        startTime = 10;
+        startTime = dataManager.PuzzleData.Time;
+//        startTime = 10;
         countTime = 0;
         remainTime = 0;
         chainFlag = false;
