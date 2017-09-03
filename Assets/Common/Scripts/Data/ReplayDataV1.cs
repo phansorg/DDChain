@@ -68,7 +68,7 @@ public class ReplayDataV1
     public virtual int Garbage { get; set; }
 
     [Index(20)]
-    public virtual int Reserved20 { get; set; }
+    public virtual string Name { get; set; }
 
     [Index(21)]
     public virtual int Reserved21 { get; set; }
@@ -121,7 +121,7 @@ public class ReplayDataV1
         CountDisp = 0;
         Garbage = 0;
 
-        Reserved20 = 0;
+        Name = string.Empty;
         Reserved21 = 0;
         Reserved22 = 0;
         Reserved23 = 0;

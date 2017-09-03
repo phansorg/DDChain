@@ -79,7 +79,8 @@ public class ScoreManager : MonoBehaviour
         query.WhereEqualTo("Garbage", param.Garbage);
         if (param.Version != 0)
         {
-            query.WhereEqualTo("Version", param.Version);
+//            query.WhereEqualTo("Version", param.Version);
+            query.WhereGreaterThan("Version", 1);
         }
 
         query.OrderByDescending("Score");

@@ -83,6 +83,9 @@ public class HighScoreButton : MonoBehaviour
                 replayDataWork[idx].Stop = scoreManager.fetchData[scoreKind].scoreDataList[idx].Stop;
                 replayDataWork[idx].CountDisp = scoreManager.fetchData[scoreKind].scoreDataList[idx].CountDisp;
                 replayDataWork[idx].Garbage = scoreManager.fetchData[scoreKind].scoreDataList[idx].Garbage;
+
+                replayDataWork[idx].Name = scoreManager.fetchData[scoreKind].scoreDataList[idx].Name;
+
             }
         }
     }
