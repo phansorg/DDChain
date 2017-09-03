@@ -387,6 +387,10 @@ public class Board : MonoBehaviour
         {
             allDelete *= AllDeleteBonus;
         }
+        else if (color <= 4 && chain <= 4)
+        {
+            allDelete /= 10;
+        }
 
         int allScore = 0;
         string singleScoreString = string.Empty;

@@ -143,8 +143,8 @@ PlayerSettings:
     iOS: com.unity3d.DDChain
     tvOS: 
   buildNumber:
-    iOS: 8
-  AndroidBundleVersionCode: 8
+    iOS: 9
+  AndroidBundleVersionCode: 9
   AndroidMinSdkVersion: 16
   AndroidTargetSdkVersion: 23
   AndroidPreferredInstallLocation: 1
