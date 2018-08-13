@@ -79,6 +79,8 @@ public class PuzzleController : MonoBehaviour {
 
     int[] colorScore;
 
+    public bool replayStop;
+
     //-------------------------------------------------------
     // MonoBehaviour Function
     //-------------------------------------------------------
@@ -156,11 +158,17 @@ public class PuzzleController : MonoBehaviour {
         replayIdx = 0;
 
         writeBlock = false;
+        replayStop = false;
     }
 
     // ゲームのメインループ
     private void Update()
     {
+        if (replayStop)
+        {
+            return;
+        }
+
         if (chainFlag)
         {
             if (currentState == PuzzleState.Idle)
