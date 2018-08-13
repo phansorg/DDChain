@@ -25,7 +25,7 @@ public class PuzzleDataV1Formatter<TTypeResolver> : Formatter<TTypeResolver, Puz
         offset += Formatter<TTypeResolver, int>.Default.Serialize(ref bytes, offset, value.Garbage);
         offset += Formatter<TTypeResolver, int>.Default.Serialize(ref bytes, offset, value.WriteCount);
 
-        offset += Formatter<TTypeResolver, int>.Default.Serialize(ref bytes, offset, value.Reserved10);
+        offset += Formatter<TTypeResolver, int>.Default.Serialize(ref bytes, offset, value.Practice);
         offset += Formatter<TTypeResolver, int>.Default.Serialize(ref bytes, offset, value.Reserved11);
         offset += Formatter<TTypeResolver, int>.Default.Serialize(ref bytes, offset, value.Reserved12);
         offset += Formatter<TTypeResolver, int>.Default.Serialize(ref bytes, offset, value.Reserved13);
@@ -64,7 +64,7 @@ public class PuzzleDataV1Formatter<TTypeResolver> : Formatter<TTypeResolver, Puz
         value.WriteCount = Formatter<TTypeResolver, int>.Default.Deserialize(ref bytes, offset, tracker, out byteSize);
         offset += 4;
 
-        value.Reserved10 = Formatter<TTypeResolver, int>.Default.Deserialize(ref bytes, offset, tracker, out byteSize);
+        value.Practice = Formatter<TTypeResolver, int>.Default.Deserialize(ref bytes, offset, tracker, out byteSize);
         offset += 4;
         value.Reserved11 = Formatter<TTypeResolver, int>.Default.Deserialize(ref bytes, offset, tracker, out byteSize);
         offset += 4;

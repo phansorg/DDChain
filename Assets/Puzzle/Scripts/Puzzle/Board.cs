@@ -112,6 +112,12 @@ public class Board : MonoBehaviour
         DispScore();
     }
 
+    // 盤外クリック判定
+    public bool IsInputOut(Vector3 input)
+    {
+        return (input.y / blockWidth > height + 1);
+    }
+
     // 入力されたクリック(タップ)位置から最も近いピースの位置を返す
     public Block GetNearestBlock(Vector3 input)
     {
@@ -695,6 +701,48 @@ public class Board : MonoBehaviour
         }
 
         return true;
+    }
+
+    public void SavePractice()
+    {
+        string practiceSave = string.Empty;
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < height; j++)
+            {
+                Block block = board[i, j];
+                int blockKind = (int)block.GetKind();
+                int blockGarbage = (int)block.garbageKind;
+                practiceSave += blockKind.ToString() + blockGarbage.ToString();
+            }
+        }
+
+        Debug.Log("save practiceSave:" + practiceSave);
+        DataManager dataManager = DataManager.Instance;
+        dataManager.UserData.PracticeSave = practiceSave;
+        dataManager.Write();
+    }
+
+    public void LoadPractice()
+    {
+        DataManager dataManager = DataManager.Instance;
+        string practiceSave = dataManager.UserData.PracticeSave;
+
+        if (practiceSave.Length != width * height * 2)
+        {
+            return;
+        }
+
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < height; j++)
+            {
+                Block block = board[i, j];
+                block.SetKind((BlockKind)int.Parse(practiceSave.Substring((i * height + j) * 2, 1)));
+                block.garbageKind = (GarbageKind)int.Parse(practiceSave.Substring((i * height + j) * 2 + 1, 1));
+            }
+        }
+
     }
 
 }

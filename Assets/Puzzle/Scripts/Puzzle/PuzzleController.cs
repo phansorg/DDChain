@@ -72,6 +72,11 @@ public class PuzzleController : MonoBehaviour {
     private int replayScoreKind;
     private int replayIdx;
 
+    private bool practice;
+    public bool writeBlock;
+    public BlockKind writeBlockKind;
+    public GarbageKind writeGarbageKind;
+
     int[] colorScore;
 
     //-------------------------------------------------------
@@ -83,14 +88,42 @@ public class PuzzleController : MonoBehaviour {
         DataManager dataManager = DataManager.Instance;
         if (dataManager.ReplayData.Version != 0)
         {
+            // リプレイ
             replay = true;
             replayScoreKind = dataManager.ReplayData.ScoreKindValue;
+            practice = false;
         }
         else
         {
+            //リプレイでない
             replay = false;
+
+            if (dataManager.PuzzleData.Practice != 0)
+            {
+                practice = true;
+            }
+            else
+            {
+                practice = false;
+            }
         }
         Debug.Log("replay:" + replay);
+        Debug.Log("practice:" + practice);
+
+        if (practice == false)
+        {
+            Action<string> HideObject = (objectName) =>
+            {
+                Transform transform = GameObject.Find(objectName).GetComponent<Transform>();
+                Vector3 pos;
+                pos = transform.position;
+                pos.x -= 1000;
+                transform.position = pos;
+            };
+            HideObject("ObjectDropdown");
+            HideObject("SaveButton");
+            HideObject("LoadButton");
+        }
 
         InitScoreData();
 
@@ -115,6 +148,8 @@ public class PuzzleController : MonoBehaviour {
         scoreSending = false;
 
         replayIdx = 0;
+
+        writeBlock = false;
     }
 
     // ゲームのメインループ
@@ -527,13 +562,27 @@ public class PuzzleController : MonoBehaviour {
         }
         else
         {
+            // クリック位置取得
             inputPos = GodTouch.GetPosition();
+            // 盤外なら処理しない
+            if (board.IsInputOut(inputPos))
+            {
+                return;
+            }
+            // 近くのブロックを取得
             selectedBlock = board.GetNearestBlock(inputPos);
+            // 練習の書込モードの場合、書き込んで処理終了
+            if (writeBlock)
+            {
+                selectedBlock.SetKind(writeBlockKind);
+                selectedBlock.garbageKind = writeGarbageKind;
+                return;
+            }
+            // お邪魔は選択できない
             if (selectedBlock.garbageKind != GarbageKind.None)
             {
                 return;
             }
-
             // リプレイの処理
             inputFrame.Add(frame);
             inputType.Add((int)InputType.Select);
@@ -634,4 +683,13 @@ public class PuzzleController : MonoBehaviour {
         endCallBack();
     }
 
+    public void SavePractice()
+    {
+        board.SavePractice();
+    }
+
+    public void LoadPractice()
+    {
+        board.LoadPractice();
+    }
 }
