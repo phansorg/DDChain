@@ -18,7 +18,7 @@ public class UserDataV1Formatter<TTypeResolver> : Formatter<TTypeResolver, UserD
         offset += Formatter<TTypeResolver, string>.Default.Serialize(ref bytes, offset, value.Id);
         offset += Formatter<TTypeResolver, string>.Default.Serialize(ref bytes, offset, value.Password);
         offset += Formatter<TTypeResolver, string>.Default.Serialize(ref bytes, offset, value.Name);
-        offset += Formatter<TTypeResolver, string>.Default.Serialize(ref bytes, offset, value.Reserved03);
+        offset += Formatter<TTypeResolver, string>.Default.Serialize(ref bytes, offset, value.PracticeSave);
         offset += Formatter<TTypeResolver, string>.Default.Serialize(ref bytes, offset, value.Reserved04);
         offset += Formatter<TTypeResolver, string>.Default.Serialize(ref bytes, offset, value.Reserved05);
         offset += Formatter<TTypeResolver, string>.Default.Serialize(ref bytes, offset, value.Reserved06);
@@ -41,8 +41,8 @@ public class UserDataV1Formatter<TTypeResolver> : Formatter<TTypeResolver, UserD
         offset += 4 + enc.GetByteCount(value.Password);
         value.Name = Formatter<TTypeResolver, string>.Default.Deserialize(ref bytes, offset, tracker, out byteSize);
         offset += 4 + enc.GetByteCount(value.Name);
-        value.Reserved03 = Formatter<TTypeResolver, string>.Default.Deserialize(ref bytes, offset, tracker, out byteSize);
-        offset += 4 + enc.GetByteCount(value.Reserved03);
+        value.PracticeSave = Formatter<TTypeResolver, string>.Default.Deserialize(ref bytes, offset, tracker, out byteSize);
+        offset += 4 + enc.GetByteCount(value.PracticeSave);
         value.Reserved04 = Formatter<TTypeResolver, string>.Default.Deserialize(ref bytes, offset, tracker, out byteSize);
         offset += 4 + enc.GetByteCount(value.Reserved04);
         value.Reserved05 = Formatter<TTypeResolver, string>.Default.Deserialize(ref bytes, offset, tracker, out byteSize);

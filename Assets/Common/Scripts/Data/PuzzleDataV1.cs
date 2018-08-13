@@ -39,7 +39,7 @@ public class PuzzleDataV1
     public virtual int WriteCount { get; set; }
 
     [Index(10)]
-    public virtual int Reserved10 { get; set; }
+    public virtual int Practice { get; set; }
 
     [Index(11)]
     public virtual int Reserved11 { get; set; }
@@ -81,7 +81,7 @@ public class PuzzleDataV1
         Garbage = 0;
         WriteCount = 0;
 
-        Reserved10 = 0;
+        Practice = 0;
         Reserved11 = 0;
         Reserved12 = 0;
         Reserved13 = 0;

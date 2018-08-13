@@ -79,7 +79,8 @@ public class ScoreManager : MonoBehaviour
         query.WhereEqualTo("Garbage", param.Garbage);
         if (param.Version != 0)
         {
-            query.WhereEqualTo("Version", param.Version);
+//            query.WhereEqualTo("Version", param.Version);
+            query.WhereGreaterThan("Version", 1);
         }
 
         query.OrderByDescending("Score");
@@ -157,11 +158,37 @@ public class ScoreManager : MonoBehaviour
             //検索成功したら    
             if (e == null)
             {
-                objList[0]["Name"] = param.Name;
-                objList[0]["PlayDateTime"] = param.PlayDateTime;
-                objList[0]["Score"] = param.Score;
-                objList[0]["Version"] = param.Version;
-                objList[0].SaveAsync();
+                // ハイスコアが未登録だったら
+                if (objList.Count == 0)
+                {
+                    NCMBObject obj = new NCMBObject("ScoreDataV1");
+                    obj["ScoreKindValue"] = param.ScoreKindValue;
+                    obj["Id"] = param.Id;
+                    obj["Row"] = param.Row;
+                    obj["Col"] = param.Col;
+                    obj["Color"] = param.Color;
+                    obj["Link"] = param.Link;
+                    obj["Direction"] = param.Direction;
+                    obj["Time"] = param.Time;
+                    obj["Stop"] = param.Stop;
+                    obj["CountDisp"] = param.CountDisp;
+                    obj["Garbage"] = param.Garbage;
+
+                    obj["Name"] = param.Name;
+                    obj["PlayDateTime"] = param.PlayDateTime;
+                    obj["Score"] = param.Score;
+                    obj["Version"] = param.Version;
+                    obj.SaveAsync();
+                }
+                // ハイスコアが登録済みだったら
+                else
+                {
+                    objList[0]["Name"] = param.Name;
+                    objList[0]["PlayDateTime"] = param.PlayDateTime;
+                    objList[0]["Score"] = param.Score;
+                    objList[0]["Version"] = param.Version;
+                    objList[0].SaveAsync();
+                }
             }
         });
     }
@@ -195,24 +222,6 @@ public class ScoreManager : MonoBehaviour
                 // ハイスコアが未登録だったら
                 if (objList.Count == 0)
                 {
-                    NCMBObject obj = new NCMBObject("ScoreDataV1");
-                    obj["ScoreKindValue"] = param.ScoreKindValue;
-                    obj["Id"] = param.Id;
-                    obj["Row"] = param.Row;
-                    obj["Col"] = param.Col;
-                    obj["Color"] = param.Color;
-                    obj["Link"] = param.Link;
-                    obj["Direction"] = param.Direction;
-                    obj["Time"] = param.Time;
-                    obj["Stop"] = param.Stop;
-                    obj["CountDisp"] = param.CountDisp;
-                    obj["Garbage"] = param.Garbage;
-
-                    obj["Name"] = param.Name;
-                    obj["PlayDateTime"] = 0;
-                    obj["Score"] = 0;
-                    obj["Version"] = param.Version;
-                    obj.SaveAsync();
                     highScore[param.ScoreKindValue] = 0;
                 }
                 // ハイスコアが登録済みだったら

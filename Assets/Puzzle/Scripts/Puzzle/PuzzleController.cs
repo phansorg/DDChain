@@ -69,7 +69,15 @@ public class PuzzleController : MonoBehaviour {
     private bool scoreSending;
 
     private bool replay;
+    private int replayScoreKind;
     private int replayIdx;
+
+    private bool practice;
+    public bool writeBlock;
+    public BlockKind writeBlockKind;
+    public GarbageKind writeGarbageKind;
+
+    int[] colorScore;
 
     //-------------------------------------------------------
     // MonoBehaviour Function
@@ -78,8 +86,44 @@ public class PuzzleController : MonoBehaviour {
     private void Start()
     {
         DataManager dataManager = DataManager.Instance;
-        replay = (dataManager.ReplayData.Version != 0);
+        if (dataManager.ReplayData.Version != 0)
+        {
+            // リプレイ
+            replay = true;
+            replayScoreKind = dataManager.ReplayData.ScoreKindValue;
+            practice = false;
+        }
+        else
+        {
+            //リプレイでない
+            replay = false;
+
+            if (dataManager.PuzzleData.Practice != 0)
+            {
+                practice = true;
+            }
+            else
+            {
+                practice = false;
+            }
+        }
         Debug.Log("replay:" + replay);
+        Debug.Log("practice:" + practice);
+
+        if (practice == false)
+        {
+            Action<string> HideObject = (objectName) =>
+            {
+                Transform transform = GameObject.Find(objectName).GetComponent<Transform>();
+                Vector3 pos;
+                pos = transform.position;
+                pos.x -= 1000;
+                transform.position = pos;
+            };
+            HideObject("ObjectDropdown");
+            HideObject("SaveButton");
+            HideObject("LoadButton");
+        }
 
         InitScoreData();
 
@@ -104,6 +148,8 @@ public class PuzzleController : MonoBehaviour {
         scoreSending = false;
 
         replayIdx = 0;
+
+        writeBlock = false;
     }
 
     // ゲームのメインループ
@@ -230,18 +276,36 @@ public class PuzzleController : MonoBehaviour {
         {
             scoreData[scoreKind] = new ScoreDataV1();
 
-            scoreData[scoreKind].Id = dataManager.UserData.Id;
-            scoreData[scoreKind].Name = dataManager.UserData.Name;
-            scoreData[scoreKind].Row = dataManager.PuzzleData.Row;
-            scoreData[scoreKind].Col = dataManager.PuzzleData.Col;
-            scoreData[scoreKind].Color = dataManager.PuzzleData.Color;
-            scoreData[scoreKind].Link = dataManager.PuzzleData.Link;
-            scoreData[scoreKind].Direction = dataManager.PuzzleData.Direction;
-            scoreData[scoreKind].Time = dataManager.PuzzleData.Time;
-            scoreData[scoreKind].Stop = dataManager.PuzzleData.Stop;
-            scoreData[scoreKind].CountDisp = dataManager.PuzzleData.CountDisp;
-            scoreData[scoreKind].Garbage = dataManager.PuzzleData.Garbage;
-            scoreData[scoreKind].Version = CommonDefine.VERSION;
+            if (replay)
+            {
+                scoreData[scoreKind].Id = dataManager.ReplayData.Id;
+                scoreData[scoreKind].Name = dataManager.ReplayData.Name;
+                scoreData[scoreKind].Row = dataManager.ReplayData.Row;
+                scoreData[scoreKind].Col = dataManager.ReplayData.Col;
+                scoreData[scoreKind].Color = dataManager.ReplayData.Color;
+                scoreData[scoreKind].Link = dataManager.ReplayData.Link;
+                scoreData[scoreKind].Direction = dataManager.ReplayData.Direction;
+                scoreData[scoreKind].Time = dataManager.ReplayData.Time;
+                scoreData[scoreKind].Stop = dataManager.ReplayData.Stop;
+                scoreData[scoreKind].CountDisp = dataManager.ReplayData.CountDisp;
+                scoreData[scoreKind].Garbage = dataManager.ReplayData.Garbage;
+                scoreData[scoreKind].Version = dataManager.ReplayData.Version;
+            }
+            else
+            {
+                scoreData[scoreKind].Id = dataManager.UserData.Id;
+                scoreData[scoreKind].Name = dataManager.UserData.Name;
+                scoreData[scoreKind].Row = dataManager.PuzzleData.Row;
+                scoreData[scoreKind].Col = dataManager.PuzzleData.Col;
+                scoreData[scoreKind].Color = dataManager.PuzzleData.Color;
+                scoreData[scoreKind].Link = dataManager.PuzzleData.Link;
+                scoreData[scoreKind].Direction = dataManager.PuzzleData.Direction;
+                scoreData[scoreKind].Time = dataManager.PuzzleData.Time;
+                scoreData[scoreKind].Stop = dataManager.PuzzleData.Stop;
+                scoreData[scoreKind].CountDisp = dataManager.PuzzleData.CountDisp;
+                scoreData[scoreKind].Garbage = dataManager.PuzzleData.Garbage;
+                scoreData[scoreKind].Version = CommonDefine.VERSION;
+            }
 
             scoreData[scoreKind].ScoreKindValue = scoreKind;
             scoreManager.getScore(scoreData[scoreKind]);
@@ -281,9 +345,20 @@ public class PuzzleController : MonoBehaviour {
     {
         if (remainTime == 0)
         {
+            CalcColorScore();
+
             if (replay)
             {
-                currentState = PuzzleState.Result;
+                ScoreManager scoreManager = ScoreManager.Instance;
+                Debug.Log("colorScore[replayScoreKind]" + colorScore[replayScoreKind] + " scoreManager.highScore[replayScoreKind]" + scoreManager.highScore[replayScoreKind]);
+                if (colorScore[replayScoreKind] == scoreManager.highScore[replayScoreKind])
+                {
+                    currentState = PuzzleState.Result;
+                }
+                else
+                {
+                    currentState = PuzzleState.SendScoreData;
+                }
             }
             else
             {
@@ -487,13 +562,27 @@ public class PuzzleController : MonoBehaviour {
         }
         else
         {
+            // クリック位置取得
             inputPos = GodTouch.GetPosition();
+            // 盤外なら処理しない
+            if (board.IsInputOut(inputPos))
+            {
+                return;
+            }
+            // 近くのブロックを取得
             selectedBlock = board.GetNearestBlock(inputPos);
+            // 練習の書込モードの場合、書き込んで処理終了
+            if (writeBlock)
+            {
+                selectedBlock.SetKind(writeBlockKind);
+                selectedBlock.garbageKind = writeGarbageKind;
+                return;
+            }
+            // お邪魔は選択できない
             if (selectedBlock.garbageKind != GarbageKind.None)
             {
                 return;
             }
-
             // リプレイの処理
             inputFrame.Add(frame);
             inputType.Add((int)InputType.Select);
@@ -531,37 +620,44 @@ public class PuzzleController : MonoBehaviour {
         currentState = PuzzleState.MatchCheck;
     }
 
+    private void CalcColorScore()
+    {
+        // 各色のスコアデータを集計
+        colorScore = new int[ScoreDataV1.SCORE_KIND_MAX];
+        foreach (int score in board.score)
+        {
+            colorScore[(int)ScoreDataV1.ScoreKind.AllColor] += score;
+            if (colorScore[(int)ScoreDataV1.ScoreKind.SingleColor] < score)
+            {
+                colorScore[(int)ScoreDataV1.ScoreKind.SingleColor] = score;
+            }
+        }
+    }
+
     private IEnumerator ProcScoreData(Action endCallBack)
     {
         if (scoreSending == false)
         {
             DataManager dataManager = DataManager.Instance;
 
-            int[] colorScore = new int[ScoreDataV1.SCORE_KIND_MAX];
             long playDateTime = DateTime.Now.ToBinary();
-
-            // 各色のスコアデータを集計
-            foreach (int score in board.score)
-            {
-                colorScore[(int)ScoreDataV1.ScoreKind.AllColor] += score;
-                if (colorScore[(int)ScoreDataV1.ScoreKind.SingleColor] < score)
-                {
-                    colorScore[(int)ScoreDataV1.ScoreKind.SingleColor] = score;
-                }
-            }
 
             // スコア更新しているなら送信
             ScoreManager scoreManager = ScoreManager.Instance;
             for (int scoreKind = 0; scoreKind < scoreData.Length; scoreKind++)
             {
-                if (colorScore[scoreKind] > scoreManager.highScore[scoreKind])
+                // スコア
+                if ((replay == false && colorScore[scoreKind] > scoreManager.highScore[scoreKind]) ||
+                    (replay == true && replayScoreKind == scoreKind))
                 {
-                    // スコア
                     scoreData[scoreKind].Score = colorScore[scoreKind];
                     scoreData[scoreKind].PlayDateTime = playDateTime;
                     scoreManager.save(scoreData[scoreKind]);
+                }
 
-                    // リプレイ
+                // リプレイ
+                if (replay == false && colorScore[scoreKind] > scoreManager.highScore[scoreKind])
+                {
                     replayData[scoreKind].PlayDateTime = playDateTime;
                     replayData[scoreKind].FrameCount = frame;
                     replayData[scoreKind].InputCount = inputType.Count;
@@ -577,6 +673,7 @@ public class PuzzleController : MonoBehaviour {
                     }
                      */
                     scoreManager.saveReplay(replayData[scoreKind]);
+
                 }
             }
         }
@@ -586,4 +683,13 @@ public class PuzzleController : MonoBehaviour {
         endCallBack();
     }
 
+    public void SavePractice()
+    {
+        board.SavePractice();
+    }
+
+    public void LoadPractice()
+    {
+        board.LoadPractice();
+    }
 }
