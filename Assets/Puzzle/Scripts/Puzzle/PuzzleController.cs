@@ -79,6 +79,8 @@ public class PuzzleController : MonoBehaviour {
 
     int[] colorScore;
 
+    public bool replayStop;
+
     //-------------------------------------------------------
     // MonoBehaviour Function
     //-------------------------------------------------------
@@ -110,16 +112,22 @@ public class PuzzleController : MonoBehaviour {
         Debug.Log("replay:" + replay);
         Debug.Log("practice:" + practice);
 
-        if (practice == false)
+        Action<string> HideObject = (objectName) =>
         {
-            Action<string> HideObject = (objectName) =>
-            {
-                Transform transform = GameObject.Find(objectName).GetComponent<Transform>();
-                Vector3 pos;
-                pos = transform.position;
-                pos.x -= 1000;
-                transform.position = pos;
-            };
+            Transform transform = GameObject.Find(objectName).GetComponent<Transform>();
+            Vector3 pos;
+            pos = transform.position;
+            pos.x -= 2000;
+            transform.position = pos;
+        };
+        if (practice)
+        {
+            HideObject("TimerText");
+            HideObject("AllScoreText");
+            HideObject("SingleScoreText");
+        }
+        else
+        {
             HideObject("ObjectDropdown");
             HideObject("SaveButton");
             HideObject("LoadButton");
@@ -150,11 +158,17 @@ public class PuzzleController : MonoBehaviour {
         replayIdx = 0;
 
         writeBlock = false;
+        replayStop = false;
     }
 
     // ゲームのメインループ
     private void Update()
     {
+        if (replayStop)
+        {
+            return;
+        }
+
         if (chainFlag)
         {
             if (currentState == PuzzleState.Idle)
@@ -183,33 +197,40 @@ public class PuzzleController : MonoBehaviour {
         }
         else
         {
-            remainTime = startTime - countTime;
-            if (remainTime < 0)
+            if (practice)
             {
-                remainTime = 0;
+                remainTime = startTime;
             }
-            timerText.text = remainTime.ToString("F1") + " Sec";
-
-            if (countTime >= 10)
+            else
             {
-                int idx1Sec = Mathf.CeilToInt(remainTime);
-                int idx10Sec = (idx1Sec + 9) / 10 - 1;
-
-                if (idx1Sec <= 5)
+                remainTime = startTime - countTime;
+                if (remainTime < 0)
                 {
-                    if (se1SecFlags[idx1Sec] == false)
-                    {
-                        se1SecFlags[idx1Sec] = true;
-                        se1Sec.PlayOneShot(se1Sec.clip);
-                    }
+                    remainTime = 0;
                 }
-                else if (idx10Sec >= 0)
+                timerText.text = remainTime.ToString("F1") + " Sec";
+
+                if (countTime >= 10)
                 {
-                    if (se10SecFlags[idx10Sec] == false)
+                    int idx1Sec = Mathf.CeilToInt(remainTime);
+                    int idx10Sec = (idx1Sec + 9) / 10 - 1;
+
+                    if (idx1Sec <= 5)
                     {
-                        se10SecFlags[idx10Sec] = true;
-                        //se10Sec.PlayOneShot(se10Sec.clip);
-                        se1Sec.PlayOneShot(se1Sec.clip);
+                        if (se1SecFlags[idx1Sec] == false)
+                        {
+                            se1SecFlags[idx1Sec] = true;
+                            se1Sec.PlayOneShot(se1Sec.clip);
+                        }
+                    }
+                    else if (idx10Sec >= 0)
+                    {
+                        if (se10SecFlags[idx10Sec] == false)
+                        {
+                            se10SecFlags[idx10Sec] = true;
+                            //se10Sec.PlayOneShot(se10Sec.clip);
+                            se1Sec.PlayOneShot(se1Sec.clip);
+                        }
                     }
                 }
             }
@@ -529,7 +550,7 @@ public class PuzzleController : MonoBehaviour {
     private void SendScoreData()
     {
         Text label;
-        label = GameObject.Find("Text").GetComponent<Text>();
+        label = GameObject.Find("MenuText").GetComponent<Text>();
         label.text = "Wait...";
 
         StartCoroutine(ProcScoreData(() => currentState = PuzzleState.Result));
@@ -538,7 +559,7 @@ public class PuzzleController : MonoBehaviour {
     private void Result()
     {
         Text label;
-        label = GameObject.Find("Text").GetComponent<Text>();
+        label = GameObject.Find("MenuText").GetComponent<Text>();
         label.text = "Menu";
 
         GodPhase phase = GodTouch.GetPhase();
