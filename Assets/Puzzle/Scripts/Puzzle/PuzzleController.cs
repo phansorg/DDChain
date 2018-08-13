@@ -120,6 +120,10 @@ public class PuzzleController : MonoBehaviour {
             pos.x -= 2000;
             transform.position = pos;
         };
+        if (replay == false)
+        {
+            HideObject("StopToggle");
+        }
         if (practice)
         {
             HideObject("TimerText");
