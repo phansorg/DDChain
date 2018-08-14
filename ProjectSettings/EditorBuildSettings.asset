@@ -39,7 +39,10 @@ EditorBuildSettings:
     path: Assets/PuzzleGame/Scenes/_demoScoringGame_tap.unity
     guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/Menu/Scenes/MainMenu.unity
+    path: Assets/MainMenu/Scenes/MainMenu.unity
+    guid: 6478541c4a9f25644a3c5e811f55d4c7
+  - enabled: 1
+    path: Assets/FreePlayMenu/Scenes/FreePlayMenu.unity
     guid: f3908e7fbe3c42c4695cae4d5aec3018
   - enabled: 1
     path: Assets/Puzzle/Scenes/Puzzle.unity

@@ -4,18 +4,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class StartButton : MonoBehaviour {
+public class PracticeButton : MonoBehaviour {
 
-	public void OnClick () {
-
-        TitleController.WriteData();
+    public void OnClick()
+    {
+        FreePlayMenuController.WriteData();
 
         DataManager dataManager = DataManager.Instance;
-        dataManager.PuzzleData.Practice = 0;
+        dataManager.PuzzleData.Practice = 1;
         dataManager.PuzzleData.WriteCount++;
         dataManager.Write();
 
         SceneManager.LoadScene("Puzzle");
     }
-
 }

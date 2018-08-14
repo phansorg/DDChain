@@ -38,20 +38,20 @@ public class OldScoreButton : MonoBehaviour
                 transform.position = pos;
             };
 
-            label = GameObject.Find(TitleController.LabelName[scoreKind]).GetComponent<Text>();
+            label = GameObject.Find(FreePlayMenuController.LabelName[scoreKind]).GetComponent<Text>();
             SetPosition(label.transform, true);
 
             for (int idx = 0; idx < ScoreManager.RANK_MAX; idx++)
             {
                 // スコア表示
-                button = GameObject.Find(TitleController.ReplayButtonName[scoreKind] + idx).GetComponent<Button>();
+                button = GameObject.Find(FreePlayMenuController.ReplayButtonName[scoreKind] + idx).GetComponent<Button>();
                 SetPosition(button.transform, false);
 
-                label = GameObject.Find(TitleController.NameLabelName[scoreKind] + idx).GetComponent<Text>();
+                label = GameObject.Find(FreePlayMenuController.NameLabelName[scoreKind] + idx).GetComponent<Text>();
                 label.text = scoreManager.fetchData[scoreKind].scoreDataList[idx].Name;
                 SetPosition(label.transform, true);
 
-                label = GameObject.Find(TitleController.ScoreLabelName[scoreKind] + idx).GetComponent<Text>();
+                label = GameObject.Find(FreePlayMenuController.ScoreLabelName[scoreKind] + idx).GetComponent<Text>();
                 label.text = "" + scoreManager.fetchData[scoreKind].scoreDataList[idx].Score;
                 SetPosition(label.transform, true);
             }
@@ -61,7 +61,7 @@ public class OldScoreButton : MonoBehaviour
 
     public void OnClick()
     {
-        TitleController.WriteData();
+        FreePlayMenuController.WriteData();
 
         DataManager dataManager = DataManager.Instance;
 
