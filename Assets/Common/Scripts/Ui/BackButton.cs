@@ -7,8 +7,6 @@ public class BackButton : MonoBehaviour {
 
     public void OnClick()
     {
-        FreePlayMenuController.WriteData();
-
         SceneManager.LoadScene("MainMenu");
     }
 

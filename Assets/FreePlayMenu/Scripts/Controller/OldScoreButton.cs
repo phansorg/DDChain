@@ -41,7 +41,7 @@ public class OldScoreButton : MonoBehaviour
             label = GameObject.Find(FreePlayMenuController.LabelName[scoreKind]).GetComponent<Text>();
             SetPosition(label.transform, true);
 
-            for (int idx = 0; idx < ScoreManager.RANK_MAX; idx++)
+            for (int idx = 0; idx < FreePlayMenuController.RANK_MAX; idx++)
             {
                 // スコア表示
                 button = GameObject.Find(FreePlayMenuController.ReplayButtonName[scoreKind] + idx).GetComponent<Button>();
@@ -84,7 +84,7 @@ public class OldScoreButton : MonoBehaviour
         for (int scoreKind = 0; scoreKind < ScoreDataV1.SCORE_KIND_MAX; scoreKind++)
         {
             param.ScoreKindValue = scoreKind;
-            scoreManager.fetchTopRankers(scoreKind, param);
+            scoreManager.fetchTopRankers(scoreKind, param, FreePlayMenuController.RANK_MAX);
         }
 
     }

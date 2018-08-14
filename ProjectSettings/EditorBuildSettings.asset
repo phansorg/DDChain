@@ -47,3 +47,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Puzzle/Scenes/Puzzle.unity
     guid: 9327e460237f41a468d6102d6d7ae908
+  - enabled: 1
+    path: Assets/Ranking/Scenes/Ranking.unity
+    guid: 4b8f19c5d8e8a8d4f8e53c3f6a023da9

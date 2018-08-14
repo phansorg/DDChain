@@ -17,8 +17,6 @@ public class ScoreManager : MonoBehaviour
         public ReplayDataV1 replayData;
     }
 
-    public const int RANK_MAX = 10;
-
     public FetchData[] fetchData;
     public int version;
 
@@ -57,7 +55,7 @@ public class ScoreManager : MonoBehaviour
     // Score
     // ============================================================
     // サーバーからトップ10を取得 ---------------    
-    public void fetchTopRankers(int scoreKind, ScoreDataV1 param)
+    public void fetchTopRankers(int scoreKind, ScoreDataV1 param, int queryLimit)
     {
         fetchData[scoreKind].flag = false;
 
@@ -84,7 +82,7 @@ public class ScoreManager : MonoBehaviour
         }
 
         query.OrderByDescending("Score");
-        query.Limit = RANK_MAX;
+        query.Limit = queryLimit;
         query.FindAsync((List<NCMBObject> objList, NCMBException e) =>
         {
 
@@ -122,7 +120,7 @@ public class ScoreManager : MonoBehaviour
                     }
                     fetchData[scoreKind].scoreDataList.Add(data);
                 }
-                for (int idx = objList.Count; idx < RANK_MAX; idx++)
+                for (int idx = objList.Count; idx < queryLimit; idx++)
                 {
                     ScoreDataV1 data = new ScoreDataV1();
                     data.Score = 0;

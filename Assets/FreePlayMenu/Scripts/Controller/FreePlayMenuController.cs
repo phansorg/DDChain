@@ -12,6 +12,8 @@ public class FreePlayMenuController : MonoBehaviour {
     public static string[] ScoreLabelName = { "AllColorScoreLabel_", "SingleColorScoreLabel_" };
     public static string[] scoreKindName = { "AllColor", "SingleColor" };
 
+    public static int RANK_MAX = 10;
+
     public static void WriteData()
     {
         DataManager dataManager = DataManager.Instance;
@@ -118,7 +120,7 @@ public class FreePlayMenuController : MonoBehaviour {
         pos.x += Screen.width;
         label.transform.position = pos;
 
-        for (int idx = 0; idx < ScoreManager.RANK_MAX; idx++)
+        for (int idx = 0; idx < FreePlayMenuController.RANK_MAX; idx++)
         {
             Action<string, string, int, int> InitObject = (prefabName, objectName, posX, posY) =>
             {
