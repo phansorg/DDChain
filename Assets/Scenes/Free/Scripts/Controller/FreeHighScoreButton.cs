@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class HighScoreButton : MonoBehaviour
+public class FreeHighScoreButton : MonoBehaviour
 {
     public static List<ReplayDataV1>[] replayData;
 

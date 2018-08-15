@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Settings : MonoBehaviour {
+public class FreeSettings : MonoBehaviour {
 
     private bool valueChangeFlag = false;
 

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class OldScoreButton : MonoBehaviour
+public class FreeOldScoreButton : MonoBehaviour
 {
     public void Start()
     {

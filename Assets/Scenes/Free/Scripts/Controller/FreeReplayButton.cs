@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class ReplayButton : MonoBehaviour
+public class FreeReplayButton : MonoBehaviour
 {
     public void Start()
     {
@@ -44,7 +44,7 @@ public class ReplayButton : MonoBehaviour
             }
 
             int idx = int.Parse(name.Substring(name.IndexOf("_") + 1));
-            ReplayDataV1 param = HighScoreButton.replayData[scoreKind][idx];
+            ReplayDataV1 param = FreeHighScoreButton.replayData[scoreKind][idx];
 
             if (param.Version == 0)
             {
