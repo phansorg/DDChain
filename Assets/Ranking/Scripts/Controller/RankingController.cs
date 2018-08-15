@@ -54,7 +54,7 @@ public class RankingController : MonoBehaviour {
         for (int scoreKind = 0; scoreKind < ScoreDataV1.SCORE_KIND_MAX; scoreKind++)
         {
             param.ScoreKindValue = scoreKind;
-            scoreManager.fetchTopRankers(scoreKind, param, RankingController.RANK_MAX);
+            scoreManager.fetchTrend(scoreKind, param, RankingController.RANK_MAX);
         }
     }
 

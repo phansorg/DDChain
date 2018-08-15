@@ -132,6 +132,74 @@ public class ScoreManager : MonoBehaviour
         });
     }
 
+    // サーバーからトレンドを取得 ---------------    
+    public void fetchTrend(int scoreKind, ScoreDataV1 param, int queryLimit)
+    {
+        fetchData[scoreKind].flag = false;
+
+        version = param.Version;
+
+        // データストアの「ScoreDataV1」クラスから検索
+        NCMBQuery<NCMBObject> query = new NCMBQuery<NCMBObject>("ScoreDataV1");
+
+        query.WhereEqualTo("ScoreKindValue", param.ScoreKindValue);
+        if (param.Version != 0)
+        {
+            //            query.WhereEqualTo("Version", param.Version);
+            query.WhereGreaterThan("Version", 1);
+        }
+
+        query.OrderByDescending("PlayDateTime");
+        query.Limit = queryLimit;
+        query.FindAsync((List<NCMBObject> objList, NCMBException e) =>
+        {
+
+            if (e != null)
+            {
+                //検索失敗時の処理
+            }
+            else
+            {
+                //検索成功時の処理
+                fetchData[scoreKind].scoreDataList.Clear();
+                // 取得したレコードをScoreDataV1クラスとして保存
+                foreach (NCMBObject obj in objList)
+                {
+                    ScoreDataV1 data = new ScoreDataV1();
+                    data.Score = System.Convert.ToInt32(obj["Score"]);
+                    data.Name = System.Convert.ToString(obj["Name"]);
+                    if (version != 0)
+                    {
+                        data.Version = System.Convert.ToInt32(obj["Version"]);
+                        data.Id = System.Convert.ToString(obj["Id"]);
+                        data.PlayDateTime = System.Convert.ToInt64(obj["PlayDateTime"]);
+                        data.ScoreKindValue = System.Convert.ToInt32(obj["ScoreKindValue"]);
+
+                        data.Row = System.Convert.ToInt32(obj["Row"]);
+                        data.Col = System.Convert.ToInt32(obj["Col"]);
+                        data.Color = System.Convert.ToInt32(obj["Color"]);
+                        data.Link = System.Convert.ToInt32(obj["Link"]);
+                        data.Direction = System.Convert.ToInt32(obj["Direction"]);
+                        data.Time = System.Convert.ToInt32(obj["Time"]);
+                        data.Stop = System.Convert.ToInt32(obj["Stop"]);
+                        data.CountDisp = System.Convert.ToInt32(obj["CountDisp"]);
+                        data.Garbage = System.Convert.ToInt32(obj["Garbage"]);
+
+                    }
+                    fetchData[scoreKind].scoreDataList.Add(data);
+                }
+                for (int idx = objList.Count; idx < queryLimit; idx++)
+                {
+                    ScoreDataV1 data = new ScoreDataV1();
+                    data.Score = 0;
+                    data.Name = "----------";
+                    fetchData[scoreKind].scoreDataList.Add(data);
+                }
+                fetchData[scoreKind].flag = true;
+            }
+        });
+    }
+
     // サーバーにハイスコアを保存 -------------------------
     public void save(ScoreDataV1 param)
     {
