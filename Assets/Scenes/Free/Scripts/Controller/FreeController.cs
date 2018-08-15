@@ -7,9 +7,11 @@ using UnityEngine.UI;
 public class FreeController : MonoBehaviour {
 
     public static string[] LabelName = { "AllColorLabel", "SingleColorLabel" };
+
     public static string[] ReplayButtonName = { "AllColorReplayButton_", "SingleColorReplayButton_" };
     public static string[] NameLabelName = { "AllColorNameLabel_", "SingleColorNameLabel_" };
     public static string[] ScoreLabelName = { "AllColorScoreLabel_", "SingleColorScoreLabel_" };
+
     public static string[] scoreKindName = { "AllColor", "SingleColor" };
 
     public static int RANK_MAX = 10;
