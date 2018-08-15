@@ -9,9 +9,11 @@ public class MenuButton : MonoBehaviour {
     {
         if (PuzzleController.currentState != PuzzleController.PuzzleState.SendScoreData)
         {
+            PuzzleController.currentState = PuzzleController.PuzzleState.Wait; // 暫定対策
             iTween.tweens.Clear();
 
             DataManager dataManager = DataManager.Instance;
+            PuzzleController.currentState = PuzzleController.PuzzleState.Wait; // 暫定対策
             SceneManager.LoadScene(dataManager.UserData.Scene);
         }
     }
