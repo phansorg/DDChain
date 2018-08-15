@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class RankingButton : MonoBehaviour
-{
+public class FreePlayButton : MonoBehaviour {
 
     public void OnClick()
     {
-        MainMenuController.WriteData();
+        MenuController.WriteData();
 
-        SceneManager.LoadScene("Ranking");
+        SceneManager.LoadScene("Free");
     }
 
 }

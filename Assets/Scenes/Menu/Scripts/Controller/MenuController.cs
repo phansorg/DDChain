@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MainMenuController : MonoBehaviour {
+public class MenuController : MonoBehaviour {
 
     private const string PASSWORD_CHARS = "0123456789abcdefghijklmnopqrstuvwxyz";
 
