@@ -38,7 +38,7 @@ public class ReplayButton : MonoBehaviour
     {
         for (int scoreKind = 0; scoreKind < ScoreDataV1.SCORE_KIND_MAX; scoreKind++)
         {
-            if (name.Contains(FreePlayMenuController.scoreKindName[scoreKind]) == false)
+            if (name.Contains(FreeController.scoreKindName[scoreKind]) == false)
             {
                 continue;
             }

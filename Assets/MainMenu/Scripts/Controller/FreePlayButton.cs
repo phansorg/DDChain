@@ -9,7 +9,7 @@ public class FreePlayButton : MonoBehaviour {
     {
         MainMenuController.WriteData();
 
-        SceneManager.LoadScene("FreePlayMenu");
+        SceneManager.LoadScene("Free");
     }
 
 }

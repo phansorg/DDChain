@@ -571,7 +571,7 @@ public class PuzzleController : MonoBehaviour {
         {
 
             iTween.tweens.Clear();
-            SceneManager.LoadScene("FreePlayMenu");
+            SceneManager.LoadScene("Free");
         }
     }
 

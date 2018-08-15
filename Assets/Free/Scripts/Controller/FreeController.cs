@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class FreePlayMenuController : MonoBehaviour {
+public class FreeController : MonoBehaviour {
 
     public static string[] LabelName = { "AllColorLabel", "SingleColorLabel" };
     public static string[] ReplayButtonName = { "AllColorReplayButton_", "SingleColorReplayButton_" };
@@ -120,7 +120,7 @@ public class FreePlayMenuController : MonoBehaviour {
         pos.x += Screen.width;
         label.transform.position = pos;
 
-        for (int idx = 0; idx < FreePlayMenuController.RANK_MAX; idx++)
+        for (int idx = 0; idx < FreeController.RANK_MAX; idx++)
         {
             Action<string, string, int, int> InitObject = (prefabName, objectName, posX, posY) =>
             {

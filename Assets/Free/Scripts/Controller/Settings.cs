@@ -13,7 +13,7 @@ public class Settings : MonoBehaviour {
         if (valueChangeFlag)
         {
             valueChangeFlag = false;
-            FreePlayMenuController.WriteData();
+            FreeController.WriteData();
         }
         */
     }

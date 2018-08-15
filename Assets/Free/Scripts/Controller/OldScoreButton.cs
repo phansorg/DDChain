@@ -38,20 +38,20 @@ public class OldScoreButton : MonoBehaviour
                 transform.position = pos;
             };
 
-            label = GameObject.Find(FreePlayMenuController.LabelName[scoreKind]).GetComponent<Text>();
+            label = GameObject.Find(FreeController.LabelName[scoreKind]).GetComponent<Text>();
             SetPosition(label.transform, true);
 
-            for (int idx = 0; idx < FreePlayMenuController.RANK_MAX; idx++)
+            for (int idx = 0; idx < FreeController.RANK_MAX; idx++)
             {
                 // スコア表示
-                button = GameObject.Find(FreePlayMenuController.ReplayButtonName[scoreKind] + idx).GetComponent<Button>();
+                button = GameObject.Find(FreeController.ReplayButtonName[scoreKind] + idx).GetComponent<Button>();
                 SetPosition(button.transform, false);
 
-                label = GameObject.Find(FreePlayMenuController.NameLabelName[scoreKind] + idx).GetComponent<Text>();
+                label = GameObject.Find(FreeController.NameLabelName[scoreKind] + idx).GetComponent<Text>();
                 label.text = scoreManager.fetchData[scoreKind].scoreDataList[idx].Name;
                 SetPosition(label.transform, true);
 
-                label = GameObject.Find(FreePlayMenuController.ScoreLabelName[scoreKind] + idx).GetComponent<Text>();
+                label = GameObject.Find(FreeController.ScoreLabelName[scoreKind] + idx).GetComponent<Text>();
                 label.text = "" + scoreManager.fetchData[scoreKind].scoreDataList[idx].Score;
                 SetPosition(label.transform, true);
             }
@@ -61,7 +61,7 @@ public class OldScoreButton : MonoBehaviour
 
     public void OnClick()
     {
-        FreePlayMenuController.WriteData();
+        FreeController.WriteData();
 
         DataManager dataManager = DataManager.Instance;
 
@@ -84,7 +84,7 @@ public class OldScoreButton : MonoBehaviour
         for (int scoreKind = 0; scoreKind < ScoreDataV1.SCORE_KIND_MAX; scoreKind++)
         {
             param.ScoreKindValue = scoreKind;
-            scoreManager.fetchTopRankers(scoreKind, param, FreePlayMenuController.RANK_MAX);
+            scoreManager.fetchTopRankers(scoreKind, param, FreeController.RANK_MAX);
         }
 
     }
