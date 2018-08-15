@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RankingController : MonoBehaviour {
+public class ReplayController : MonoBehaviour {
 
     public static string[] LabelName = { "AllColorLabel", "SingleColorLabel" };
     public static string[] ReplayButtonName = { "AllColorReplayButton_", "SingleColorReplayButton_" };
@@ -26,7 +26,7 @@ public class RankingController : MonoBehaviour {
         for (int scoreKind = 0; scoreKind < ScoreDataV1.SCORE_KIND_MAX; scoreKind++)
         {
             replayData[scoreKind] = new List<ReplayDataV1>();
-            for (int idx = 0; idx < RankingController.RANK_MAX; idx++)
+            for (int idx = 0; idx < ReplayController.RANK_MAX; idx++)
             {
                 replayData[scoreKind].Add(new ReplayDataV1());
             }
@@ -54,7 +54,7 @@ public class RankingController : MonoBehaviour {
         for (int scoreKind = 0; scoreKind < ScoreDataV1.SCORE_KIND_MAX; scoreKind++)
         {
             param.ScoreKindValue = scoreKind;
-            scoreManager.fetchTrend(scoreKind, param, RankingController.RANK_MAX);
+            scoreManager.fetchTrend(scoreKind, param, ReplayController.RANK_MAX);
         }
     }
 
@@ -85,20 +85,20 @@ public class RankingController : MonoBehaviour {
                 transform.position = pos;
             };
 
-            label = GameObject.Find(RankingController.LabelName[scoreKind]).GetComponent<Text>();
+            label = GameObject.Find(ReplayController.LabelName[scoreKind]).GetComponent<Text>();
             SetPosition(label.transform, true);
 
-            for (int idx = 0; idx < RankingController.RANK_MAX; idx++)
+            for (int idx = 0; idx < ReplayController.RANK_MAX; idx++)
             {
                 // スコア表示
-                button = GameObject.Find(RankingController.ReplayButtonName[scoreKind] + idx).GetComponent<Button>();
+                button = GameObject.Find(ReplayController.ReplayButtonName[scoreKind] + idx).GetComponent<Button>();
                 SetPosition(button.transform, true);
 
-                label = GameObject.Find(RankingController.NameLabelName[scoreKind] + idx).GetComponent<Text>();
+                label = GameObject.Find(ReplayController.NameLabelName[scoreKind] + idx).GetComponent<Text>();
                 label.text = scoreManager.fetchData[scoreKind].scoreDataList[idx].Name;
                 SetPosition(label.transform, true);
 
-                label = GameObject.Find(RankingController.ScoreLabelName[scoreKind] + idx).GetComponent<Text>();
+                label = GameObject.Find(ReplayController.ScoreLabelName[scoreKind] + idx).GetComponent<Text>();
                 label.text = "" + scoreManager.fetchData[scoreKind].scoreDataList[idx].Score;
                 SetPosition(label.transform, true);
 
@@ -143,7 +143,7 @@ public class RankingController : MonoBehaviour {
         pos.x += Screen.width;
         label.transform.position = pos;
 
-        for (int idx = 0; idx < RankingController.RANK_MAX; idx++)
+        for (int idx = 0; idx < ReplayController.RANK_MAX; idx++)
         {
             Action<string, string, int, int> InitObject = (prefabName, objectName, posX, posY) =>
             {

@@ -12,11 +12,11 @@ public class MenuEvent : MonoBehaviour {
         SceneManager.LoadScene("Free");
     }
 
-    public void OnClickRankingButton()
+    public void OnClickReplayButton()
     {
         MenuController.WriteData();
 
-        SceneManager.LoadScene("Ranking");
+        SceneManager.LoadScene("Replay");
     }
 
 }
