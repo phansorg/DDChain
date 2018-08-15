@@ -79,6 +79,7 @@ public class FreeOldScoreButton : MonoBehaviour
         param.CountDisp = dataManager.PuzzleData.CountDisp;
         param.Garbage = dataManager.PuzzleData.Garbage;
         param.Version = 0;
+        param.ScoreCategoryValue = (int)ScoreDataV1.ScoreCategory.Global;
 
         ScoreManager scoreManager = ScoreManager.Instance;
         for (int scoreKind = 0; scoreKind < ScoreDataV1.SCORE_KIND_MAX; scoreKind++)

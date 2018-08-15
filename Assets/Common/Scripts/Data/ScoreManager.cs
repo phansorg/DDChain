@@ -20,7 +20,8 @@ public class ScoreManager : MonoBehaviour
     public FetchData[] fetchData;
     public int version;
 
-    public int[] highScore;
+    public int[] allHighScore;
+    public int[] myHighScore;
 
     public FetchReplayData fetchReplayData;
 
@@ -48,7 +49,8 @@ public class ScoreManager : MonoBehaviour
             fetchData[scoreKind].scoreDataList = new List<ScoreDataV1>();
         }
 
-        highScore = new int[ScoreDataV1.SCORE_KIND_MAX];
+        allHighScore = new int[ScoreDataV1.SCORE_KIND_MAX];
+        myHighScore = new int[ScoreDataV1.SCORE_KIND_MAX];
     }
 
     // ============================================================
@@ -80,6 +82,7 @@ public class ScoreManager : MonoBehaviour
 //            query.WhereEqualTo("Version", param.Version);
             query.WhereGreaterThan("Version", 1);
         }
+        query.WhereEqualTo("ScoreCategoryValue", param.ScoreCategoryValue);
 
         query.OrderByDescending("Score");
         query.Limit = queryLimit;
@@ -116,6 +119,7 @@ public class ScoreManager : MonoBehaviour
                         data.Stop = System.Convert.ToInt32(obj["Stop"]);
                         data.CountDisp = System.Convert.ToInt32(obj["CountDisp"]);
                         data.Garbage = System.Convert.ToInt32(obj["Garbage"]);
+                        data.ScoreCategoryValue = System.Convert.ToInt32(obj["ScoreCategoryValue"]);
 
                     }
                     fetchData[scoreKind].scoreDataList.Add(data);
@@ -132,8 +136,8 @@ public class ScoreManager : MonoBehaviour
         });
     }
 
-    // サーバーからトレンドを取得 ---------------    
-    public void fetchTrend(int scoreKind, ScoreDataV1 param, int queryLimit)
+    // サーバーから新着を取得 ---------------    
+    public void fetchNewArrivals(int scoreKind, ScoreDataV1 param, int queryLimit)
     {
         fetchData[scoreKind].flag = false;
 
@@ -148,6 +152,7 @@ public class ScoreManager : MonoBehaviour
             //            query.WhereEqualTo("Version", param.Version);
             query.WhereGreaterThan("Version", 1);
         }
+        query.WhereEqualTo("ScoreCategoryValue", param.ScoreCategoryValue);
 
         query.OrderByDescending("PlayDateTime");
         query.Limit = queryLimit;
@@ -184,6 +189,7 @@ public class ScoreManager : MonoBehaviour
                         data.Stop = System.Convert.ToInt32(obj["Stop"]);
                         data.CountDisp = System.Convert.ToInt32(obj["CountDisp"]);
                         data.Garbage = System.Convert.ToInt32(obj["Garbage"]);
+                        data.ScoreCategoryValue = System.Convert.ToInt32(obj["ScoreCategoryValue"]);
 
                     }
                     fetchData[scoreKind].scoreDataList.Add(data);
@@ -193,6 +199,12 @@ public class ScoreManager : MonoBehaviour
                     ScoreDataV1 data = new ScoreDataV1();
                     data.Score = 0;
                     data.Name = "----------";
+                    data.Row = 0;
+                    data.Col = 0;
+                    data.Color = 0;
+                    data.Link = 0;
+                    data.CountDisp = 0;
+                    data.Garbage = 0;
                     fetchData[scoreKind].scoreDataList.Add(data);
                 }
                 fetchData[scoreKind].flag = true;
@@ -201,7 +213,8 @@ public class ScoreManager : MonoBehaviour
     }
 
     // サーバーにハイスコアを保存 -------------------------
-    public void save(ScoreDataV1 param)
+    // スコア送信処理は非同期でまとめて処理するため、categoryが途中で変わってしまう。
+    public void save(ScoreDataV1 param, int category)
     {
         // データストアの「ScoreDataV1」クラスから、Nameをキーにして検索
         NCMBQuery<NCMBObject> query = new NCMBQuery<NCMBObject>("ScoreDataV1");
@@ -217,6 +230,7 @@ public class ScoreManager : MonoBehaviour
         query.WhereEqualTo("CountDisp", param.CountDisp);
         query.WhereEqualTo("Garbage", param.Garbage);
         query.WhereGreaterThan("Version", 1);
+        query.WhereEqualTo("ScoreCategoryValue", category);
 
         query.FindAsync((List<NCMBObject> objList, NCMBException e) =>
         {
@@ -244,6 +258,7 @@ public class ScoreManager : MonoBehaviour
                     obj["PlayDateTime"] = param.PlayDateTime;
                     obj["Score"] = param.Score;
                     obj["Version"] = param.Version;
+                    obj["ScoreCategoryValue"] = category;
                     obj.SaveAsync();
                 }
                 // ハイスコアが登録済みだったら
@@ -260,14 +275,20 @@ public class ScoreManager : MonoBehaviour
     }
 
     // サーバーからハイスコアを取得  -----------------
-    public void getScore(ScoreDataV1 param)
+    public void getHighScore(ScoreDataV1 param, bool myScore)
     {
-        highScore[param.ScoreKindValue] = 0;
-
         // データストアの「ScoreDataV1」クラスから、Nameをキーにして検索
         NCMBQuery<NCMBObject> query = new NCMBQuery<NCMBObject>("ScoreDataV1");
         query.WhereEqualTo("ScoreKindValue", param.ScoreKindValue);
-        query.WhereEqualTo("Id", param.Id);
+        if (myScore)
+        {
+            query.WhereEqualTo("Id", param.Id);
+            myHighScore[param.ScoreKindValue] = 0;
+        }
+        else
+        {
+            allHighScore[param.ScoreKindValue] = 0;
+        }
         query.WhereEqualTo("Row", param.Row);
         query.WhereEqualTo("Col", param.Col);
         query.WhereEqualTo("Color", param.Color);
@@ -278,7 +299,9 @@ public class ScoreManager : MonoBehaviour
         query.WhereEqualTo("CountDisp", param.CountDisp);
         query.WhereEqualTo("Garbage", param.Garbage);
         query.WhereGreaterThan("Version", 1);
+        query.WhereEqualTo("ScoreCategoryValue", param.ScoreCategoryValue);
 
+        query.OrderByDescending("Score");
         query.FindAsync((List<NCMBObject> objList, NCMBException e) =>
         {
 
@@ -288,12 +311,26 @@ public class ScoreManager : MonoBehaviour
                 // ハイスコアが未登録だったら
                 if (objList.Count == 0)
                 {
-                    highScore[param.ScoreKindValue] = 0;
+                    if (myScore)
+                    {
+                        myHighScore[param.ScoreKindValue] = 0;
+                    }
+                    else
+                    {
+                        allHighScore[param.ScoreKindValue] = 0;
+                    }
                 }
                 // ハイスコアが登録済みだったら
                 else
                 {
-                    highScore[param.ScoreKindValue] = System.Convert.ToInt32(objList[0]["Score"]);
+                    if (myScore)
+                    {
+                        myHighScore[param.ScoreKindValue] = System.Convert.ToInt32(objList[0]["Score"]);
+                    }
+                    else
+                    {
+                        allHighScore[param.ScoreKindValue] = System.Convert.ToInt32(objList[0]["Score"]);
+                    }
                 }
             }
         });
@@ -324,6 +361,7 @@ public class ScoreManager : MonoBehaviour
         query.WhereEqualTo("Stop", param.Stop);
         query.WhereEqualTo("CountDisp", param.CountDisp);
         query.WhereEqualTo("Garbage", param.Garbage);
+        query.WhereEqualTo("ScoreCategoryValue", param.ScoreCategoryValue);
 
         query.Limit = 1;
         query.FindAsync((List<NCMBObject> objList, NCMBException e) =>
@@ -357,6 +395,7 @@ public class ScoreManager : MonoBehaviour
                         data.Stop = System.Convert.ToInt32(obj["Stop"]);
                         data.CountDisp = System.Convert.ToInt32(obj["CountDisp"]);
                         data.Garbage = System.Convert.ToInt32(obj["Garbage"]);
+                        data.ScoreCategoryValue = System.Convert.ToInt32(obj["ScoreCategoryValue"]);
 
                         data.Seed = System.Convert.ToInt32(obj["Seed"]);
                         data.FrameCount = System.Convert.ToInt32(obj["FrameCount"]);
@@ -385,7 +424,8 @@ public class ScoreManager : MonoBehaviour
         });
     }
 
-    public void saveReplay(ReplayDataV1 param)
+    // スコア送信処理は非同期でまとめて処理するため、categoryが途中で変わってしまう。
+    public void saveReplay(ReplayDataV1 param, int category)
     {
         // データストアの「ReplayData」クラスから、Nameをキーにして検索
         NCMBQuery<NCMBObject> query = new NCMBQuery<NCMBObject>("ReplayDataV1");
@@ -400,6 +440,7 @@ public class ScoreManager : MonoBehaviour
         query.WhereEqualTo("Stop", param.Stop);
         query.WhereEqualTo("CountDisp", param.CountDisp);
         query.WhereEqualTo("Garbage", param.Garbage);
+        query.WhereEqualTo("ScoreCategoryValue", category);
 
         query.FindAsync((List<NCMBObject> objList, NCMBException e) =>
         {
@@ -432,6 +473,7 @@ public class ScoreManager : MonoBehaviour
                     obj["Stop"] = param.Stop;
                     obj["CountDisp"] = param.CountDisp;
                     obj["Garbage"] = param.Garbage;
+                    obj["ScoreCategoryValue"] = category;
 
                     obj.SaveAsync();
                 }
@@ -448,6 +490,35 @@ public class ScoreManager : MonoBehaviour
                     objList[0]["InputData1"] = param.InputData1;
                     objList[0]["InputData2"] = param.InputData2;
                     objList[0].SaveAsync();
+                }
+            }
+        });
+    }
+
+    public void setNewCol()
+    {
+        NCMBQuery<NCMBObject> query = new NCMBQuery<NCMBObject>("ScoreDataV1");
+
+        query.WhereNotEqualTo("ScoreCategoryValue", 0);
+
+        query.Limit = 100;
+        query.FindAsync((List<NCMBObject> objList, NCMBException e) =>
+        {
+
+            if (e != null)
+            {
+                //検索失敗時の処理
+            }
+            else
+            {
+                //検索成功時の処理
+                Debug.Log("setNewCol " + objList.Count);
+
+                // 値セット
+                foreach (NCMBObject obj in objList)
+                {
+                    obj["ScoreCategoryValue"] = 0;
+                    obj.SaveAsync();
                 }
             }
         });

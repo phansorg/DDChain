@@ -26,7 +26,7 @@ public class UserDataV1
     public const int PRACTICE_SAVE_LENGTH = 10 * 8 * 2;
 
     [Index(4)]
-    public virtual string Reserved04 { get; set; }
+    public virtual string Scene { get; set; }
 
     [Index(5)]
     public virtual string Reserved05 { get; set; }
@@ -49,7 +49,7 @@ public class UserDataV1
         Password = string.Empty;
         Name = string.Empty;
         PracticeSave = string.Empty;
-        Reserved04 = string.Empty;
+        Scene = string.Empty;
         Reserved05 = string.Empty;
         Reserved06 = string.Empty;
         Reserved07 = string.Empty;

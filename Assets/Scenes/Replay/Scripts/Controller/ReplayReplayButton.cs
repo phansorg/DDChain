@@ -18,6 +18,7 @@ public class ReplayReplayButton : MonoBehaviour
         {
             return;
         }
+        Debug.Log("Replay Update");
         scoreManager.fetchReplayData.flag = false;
 
         if (scoreManager.fetchReplayData.replayData == null ||
@@ -36,25 +37,16 @@ public class ReplayReplayButton : MonoBehaviour
 
     public void OnClick()
     {
-        for (int scoreKind = 0; scoreKind < ScoreDataV1.SCORE_KIND_MAX; scoreKind++)
+        int idx = int.Parse(name.Substring(name.IndexOf("_") + 1));
+        ReplayDataV1 param = ReplayQueryDropdown.replayData[idx];
+
+        if (param.Version == 0)
         {
-            if (name.Contains(FreeController.scoreKindName[scoreKind]) == false)
-            {
-                continue;
-            }
-
-            int idx = int.Parse(name.Substring(name.IndexOf("_") + 1));
-            ReplayDataV1 param = FreeHighScoreButton.replayData[scoreKind][idx];
-
-            if (param.Version == 0)
-            {
-                continue;
-            }
-
-            ScoreManager scoreManager = ScoreManager.Instance;
-            scoreManager.fetchReplay(param);
+            return;
         }
 
+        ScoreManager scoreManager = ScoreManager.Instance;
+        scoreManager.fetchReplay(param);
     }
 
 }

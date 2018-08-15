@@ -38,7 +38,7 @@ public class ReplayDataV1Formatter<TTypeResolver> : Formatter<TTypeResolver, Rep
         offset += Formatter<TTypeResolver, int>.Default.Serialize(ref bytes, offset, value.Garbage);
 
         offset += Formatter<TTypeResolver, string>.Default.Serialize(ref bytes, offset, value.Name);
-        offset += Formatter<TTypeResolver, int>.Default.Serialize(ref bytes, offset, value.Reserved21);
+        offset += Formatter<TTypeResolver, int>.Default.Serialize(ref bytes, offset, value.ScoreCategoryValue);
         offset += Formatter<TTypeResolver, int>.Default.Serialize(ref bytes, offset, value.Reserved22);
         offset += Formatter<TTypeResolver, int>.Default.Serialize(ref bytes, offset, value.Reserved23);
         offset += Formatter<TTypeResolver, int>.Default.Serialize(ref bytes, offset, value.Reserved24);
@@ -117,7 +117,7 @@ public class ReplayDataV1Formatter<TTypeResolver> : Formatter<TTypeResolver, Rep
 
         value.Name = Formatter<TTypeResolver, string>.Default.Deserialize(ref bytes, offset, tracker, out byteSize);
         offset += 4 + enc.GetByteCount(value.Name);
-        value.Reserved21 = Formatter<TTypeResolver, int>.Default.Deserialize(ref bytes, offset, tracker, out byteSize);
+        value.ScoreCategoryValue = Formatter<TTypeResolver, int>.Default.Deserialize(ref bytes, offset, tracker, out byteSize);
         offset += 4;
         value.Reserved22 = Formatter<TTypeResolver, int>.Default.Deserialize(ref bytes, offset, tracker, out byteSize);
         offset += 4;

@@ -315,6 +315,7 @@ public class PuzzleController : MonoBehaviour {
                 scoreData[scoreKind].CountDisp = dataManager.ReplayData.CountDisp;
                 scoreData[scoreKind].Garbage = dataManager.ReplayData.Garbage;
                 scoreData[scoreKind].Version = dataManager.ReplayData.Version;
+                scoreData[scoreKind].ScoreCategoryValue = dataManager.ReplayData.ScoreCategoryValue;
             }
             else
             {
@@ -330,10 +331,12 @@ public class PuzzleController : MonoBehaviour {
                 scoreData[scoreKind].CountDisp = dataManager.PuzzleData.CountDisp;
                 scoreData[scoreKind].Garbage = dataManager.PuzzleData.Garbage;
                 scoreData[scoreKind].Version = CommonDefine.VERSION;
+                scoreData[scoreKind].ScoreCategoryValue = (int)ScoreDataV1.ScoreCategory.Global;
             }
 
             scoreData[scoreKind].ScoreKindValue = scoreKind;
-            scoreManager.getScore(scoreData[scoreKind]);
+            scoreManager.getHighScore(scoreData[scoreKind], true);
+            scoreManager.getHighScore(scoreData[scoreKind], false);
 
             if (replay)
             {
@@ -355,6 +358,7 @@ public class PuzzleController : MonoBehaviour {
             replayData[scoreKind].Stop = dataManager.PuzzleData.Stop;
             replayData[scoreKind].CountDisp = dataManager.PuzzleData.CountDisp;
             replayData[scoreKind].Garbage = dataManager.PuzzleData.Garbage;
+            replayData[scoreKind].ScoreCategoryValue = (int)ScoreDataV1.ScoreCategory.Global;
         }
 
         UnityEngine.Random.seed = seed;
@@ -375,8 +379,8 @@ public class PuzzleController : MonoBehaviour {
             if (replay)
             {
                 ScoreManager scoreManager = ScoreManager.Instance;
-                Debug.Log("colorScore[replayScoreKind]" + colorScore[replayScoreKind] + " scoreManager.highScore[replayScoreKind]" + scoreManager.highScore[replayScoreKind]);
-                if (colorScore[replayScoreKind] == scoreManager.highScore[replayScoreKind])
+                Debug.Log("colorScore[replayScoreKind]" + colorScore[replayScoreKind] + " scoreManager.highScore[replayScoreKind]" + scoreManager.myHighScore[replayScoreKind]);
+                if (colorScore[replayScoreKind] == scoreManager.myHighScore[replayScoreKind])
                 {
                     currentState = PuzzleState.Result;
                 }
@@ -672,16 +676,16 @@ public class PuzzleController : MonoBehaviour {
             for (int scoreKind = 0; scoreKind < scoreData.Length; scoreKind++)
             {
                 // スコア
-                if ((replay == false && colorScore[scoreKind] > scoreManager.highScore[scoreKind]) ||
+                if ((replay == false && colorScore[scoreKind] > scoreManager.myHighScore[scoreKind]) ||
                     (replay == true && replayScoreKind == scoreKind))
                 {
                     scoreData[scoreKind].Score = colorScore[scoreKind];
                     scoreData[scoreKind].PlayDateTime = playDateTime;
-                    scoreManager.save(scoreData[scoreKind]);
+                    scoreManager.save(scoreData[scoreKind], (int)ScoreDataV1.ScoreCategory.Global);
                 }
 
                 // リプレイ
-                if (replay == false && colorScore[scoreKind] > scoreManager.highScore[scoreKind])
+                if (replay == false && colorScore[scoreKind] > scoreManager.myHighScore[scoreKind])
                 {
                     replayData[scoreKind].PlayDateTime = playDateTime;
                     replayData[scoreKind].FrameCount = frame;
@@ -697,9 +701,40 @@ public class PuzzleController : MonoBehaviour {
                         Debug.Log("i:" + i + " InputFrame:" + replayData[scoreKind].InputFrame[i] + " InputType:" + replayData[scoreKind].InputType[i] + " InputData1:" + replayData[scoreKind].InputData1[i] + " InputData2:" + replayData[scoreKind].InputData2[i]);
                     }
                      */
-                    scoreManager.saveReplay(replayData[scoreKind]);
+                    scoreManager.saveReplay(replayData[scoreKind], (int)ScoreDataV1.ScoreCategory.Global);
 
                 }
+
+                // 新着スコア
+                if ((replay == false && colorScore[scoreKind] > scoreManager.allHighScore[scoreKind]) ||
+                    (replay == true && replayScoreKind == scoreKind))
+                {
+                    scoreData[scoreKind].Score = colorScore[scoreKind];
+                    scoreData[scoreKind].PlayDateTime = playDateTime;
+                    scoreManager.save(scoreData[scoreKind], (int)ScoreDataV1.ScoreCategory.NewArrivals);
+                }
+
+                // 新着リプレイ
+                if (replay == false && colorScore[scoreKind] > scoreManager.allHighScore[scoreKind])
+                {
+                    replayData[scoreKind].PlayDateTime = playDateTime;
+                    replayData[scoreKind].FrameCount = frame;
+                    replayData[scoreKind].InputCount = inputType.Count;
+                    replayData[scoreKind].InputFrame = inputFrame.ToArray();
+                    replayData[scoreKind].InputType = inputType.ToArray();
+                    replayData[scoreKind].InputData1 = inputData1.ToArray();
+                    replayData[scoreKind].InputData2 = inputData2.ToArray();
+                    /*
+                    Debug.Log("FrameCount:" + replayData[scoreKind].FrameCount + " InputCount:" + replayData[scoreKind].InputCount);
+                    for (int i = 0; i < replayData.InputType.Length; i++)
+                    {
+                        Debug.Log("i:" + i + " InputFrame:" + replayData[scoreKind].InputFrame[i] + " InputType:" + replayData[scoreKind].InputType[i] + " InputData1:" + replayData[scoreKind].InputData1[i] + " InputData2:" + replayData[scoreKind].InputData2[i]);
+                    }
+                     */
+                    scoreManager.saveReplay(replayData[scoreKind], (int)ScoreDataV1.ScoreCategory.NewArrivals);
+
+                }
+
             }
         }
 

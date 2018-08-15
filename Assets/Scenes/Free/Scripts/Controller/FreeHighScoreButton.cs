@@ -83,6 +83,7 @@ public class FreeHighScoreButton : MonoBehaviour
                 replayDataWork[idx].Stop = scoreManager.fetchData[scoreKind].scoreDataList[idx].Stop;
                 replayDataWork[idx].CountDisp = scoreManager.fetchData[scoreKind].scoreDataList[idx].CountDisp;
                 replayDataWork[idx].Garbage = scoreManager.fetchData[scoreKind].scoreDataList[idx].Garbage;
+                replayDataWork[idx].ScoreCategoryValue = scoreManager.fetchData[scoreKind].scoreDataList[idx].ScoreCategoryValue;
 
                 replayDataWork[idx].Name = scoreManager.fetchData[scoreKind].scoreDataList[idx].Name;
 
@@ -110,6 +111,7 @@ public class FreeHighScoreButton : MonoBehaviour
         param.CountDisp = dataManager.PuzzleData.CountDisp;
         param.Garbage = dataManager.PuzzleData.Garbage;
         param.Version = CommonDefine.VERSION;
+        param.ScoreCategoryValue = (int)ScoreDataV1.ScoreCategory.Global;
 
         ScoreManager scoreManager = ScoreManager.Instance;
         for (int scoreKind = 0; scoreKind < ScoreDataV1.SCORE_KIND_MAX; scoreKind++)

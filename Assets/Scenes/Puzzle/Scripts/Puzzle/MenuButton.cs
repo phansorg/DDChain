@@ -10,7 +10,9 @@ public class MenuButton : MonoBehaviour {
         if (PuzzleController.currentState != PuzzleController.PuzzleState.SendScoreData)
         {
             iTween.tweens.Clear();
-            SceneManager.LoadScene("Free");
+
+            DataManager dataManager = DataManager.Instance;
+            SceneManager.LoadScene(dataManager.UserData.Scene);
         }
     }
 }

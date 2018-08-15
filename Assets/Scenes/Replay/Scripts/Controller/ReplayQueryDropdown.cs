@@ -27,7 +27,7 @@ public class ReplayQueryDropdown : MonoBehaviour {
         Text label;
 
         ScoreManager scoreManager = ScoreManager.Instance;
-        for (int scoreKind = 0; scoreKind < ReplayController.SCORE_KIND_MAX; scoreKind++)
+        for (int scoreKind = 0; scoreKind < ScoreDataV1.SCORE_KIND_MAX; scoreKind++)
         {
             if (scoreManager.version == 0 ||
                 scoreManager.fetchData[scoreKind].flag == false)
@@ -138,25 +138,16 @@ public class ReplayQueryDropdown : MonoBehaviour {
 
         ScoreDataV1 param = new ScoreDataV1();
 
-        param.Id = dataManager.UserData.Id;
-        param.Name = dataManager.UserData.Name;
-        param.Row = dataManager.PuzzleData.Row;
-        param.Col = dataManager.PuzzleData.Col;
-        param.Color = dataManager.PuzzleData.Color;
-        param.Link = dataManager.PuzzleData.Link;
-        param.Direction = dataManager.PuzzleData.Direction;
-        param.Time = dataManager.PuzzleData.Time;
-        param.Stop = dataManager.PuzzleData.Stop;
-        param.CountDisp = dataManager.PuzzleData.CountDisp;
-        param.Garbage = dataManager.PuzzleData.Garbage;
         param.Version = CommonDefine.VERSION;
+        param.ScoreCategoryValue = (int)ScoreDataV1.ScoreCategory.NewArrivals;
 
         Dropdown queryDropdown = GameObject.Find("QueryDropdown").GetComponent<Dropdown>();
         int scoreKind = queryDropdown.value;
 
         ScoreManager scoreManager = ScoreManager.Instance;
         param.ScoreKindValue = scoreKind;
-        scoreManager.fetchTrend(scoreKind, param, ReplayController.RANK_MAX);
+        scoreManager.fetchNewArrivals(scoreKind, param, ReplayController.RANK_MAX);
+        //scoreManager.setNewCol();
     }
 
 }
