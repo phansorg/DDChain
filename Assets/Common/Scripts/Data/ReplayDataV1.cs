@@ -71,7 +71,7 @@ public class ReplayDataV1
     public virtual string Name { get; set; }
 
     [Index(21)]
-    public virtual int Reserved21 { get; set; }
+    public virtual int ScoreCategoryValue { get; set; }
 
     [Index(22)]
     public virtual int Reserved22 { get; set; }
@@ -122,7 +122,7 @@ public class ReplayDataV1
         Garbage = 0;
 
         Name = string.Empty;
-        Reserved21 = 0;
+        ScoreCategoryValue = 0;
         Reserved22 = 0;
         Reserved23 = 0;
         Reserved24 = 0;

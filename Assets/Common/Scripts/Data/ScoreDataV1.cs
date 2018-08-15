@@ -12,6 +12,15 @@ public class ScoreDataV1
     [IgnoreFormat]
     public const int SCORE_KIND_MAX = 2;
 
+    public enum ScoreCategory
+    {
+        Global = 0,
+        NewArrivals = 1,
+        Private = 2,
+    }
+    [IgnoreFormat]
+    public const int CATEGORY_MAX = 3;
+
     [IgnoreFormat]
     public const string SCORE_DATA_FILE_NAME = "ScoreData.bin";
 
@@ -61,7 +70,7 @@ public class ScoreDataV1
     public virtual int Version { get; set; }
 
     [Index(15)]
-    public virtual int Reserved15 { get; set; }
+    public virtual int ScoreCategoryValue { get; set; }
 
     [Index(16)]
     public virtual int Reserved16 { get; set; }
@@ -93,7 +102,7 @@ public class ScoreDataV1
         CountDisp = 0;
         Garbage = 0;
         Version = 0;
-        Reserved15 = 0;
+        ScoreCategoryValue = 0;
         Reserved16 = 0;
         Reserved17 = 0;
         Reserved18 = 0;
