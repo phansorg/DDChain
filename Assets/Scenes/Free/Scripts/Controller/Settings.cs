@@ -9,13 +9,11 @@ public class Settings : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        /*
         if (valueChangeFlag)
         {
             valueChangeFlag = false;
             FreeController.WriteData();
         }
-        */
     }
 
     public void OnValueChanged(int result)
