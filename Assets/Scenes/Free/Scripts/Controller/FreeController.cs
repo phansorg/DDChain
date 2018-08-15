@@ -139,12 +139,12 @@ public class FreeController : MonoBehaviour {
 
             int dy = (int)Screen.height / 31;
 
-            InitObject("Prefabs/ReplayButton", ReplayButtonName[0] + idx, Screen.width, idx * dy);
-            InitObject("Prefabs/NameLabel", NameLabelName[0] + idx, Screen.width, idx * dy);
-            InitObject("Prefabs/ScoreLabel", ScoreLabelName[0] + idx, Screen.width, idx * dy);
-            InitObject("Prefabs/ReplayButton", ReplayButtonName[1] + idx, (int)(Screen.width * 1.45), idx * dy);
-            InitObject("Prefabs/NameLabel", NameLabelName[1] + idx, (int)(Screen.width * 1.45), idx * dy);
-            InitObject("Prefabs/ScoreLabel", ScoreLabelName[1] + idx, (int)(Screen.width * 1.45), idx * dy);
+            InitObject("Prefabs/Free/FreeReplayButton", ReplayButtonName[0] + idx, Screen.width, idx * dy);
+            InitObject("Prefabs/Free/FreeNameLabel", NameLabelName[0] + idx, Screen.width, idx * dy);
+            InitObject("Prefabs/Free/FreeScoreLabel", ScoreLabelName[0] + idx, Screen.width, idx * dy);
+            InitObject("Prefabs/Free/FreeReplayButton", ReplayButtonName[1] + idx, (int)(Screen.width * 1.45), idx * dy);
+            InitObject("Prefabs/Free/FreeNameLabel", NameLabelName[1] + idx, (int)(Screen.width * 1.45), idx * dy);
+            InitObject("Prefabs/Free/FreeScoreLabel", ScoreLabelName[1] + idx, (int)(Screen.width * 1.45), idx * dy);
         }
     }
 }
