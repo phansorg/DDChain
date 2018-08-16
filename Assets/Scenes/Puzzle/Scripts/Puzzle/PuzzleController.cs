@@ -139,10 +139,10 @@ public class PuzzleController : MonoBehaviour {
 
         InitScoreData();
 
-        board.InitializeBoard(dataManager.PuzzleData.Col, dataManager.PuzzleData.Row);
+        board.InitializeBoard(scoreData[0].Col, scoreData[0].Row, replay);
         board.HasMatch();
 
-        startTime = dataManager.PuzzleData.Time;
+        startTime = scoreData[0].Time;
 //        startTime = 10;
         countTime = 0;
         remainTime = 0;
@@ -155,7 +155,7 @@ public class PuzzleController : MonoBehaviour {
         se1Sec = audioSources[0];
 //        se10Sec = audioSources[1];
         se1SecFlags = new bool[6];
-        se10SecFlags = new bool[dataManager.PuzzleData.Time / 10];
+        se10SecFlags = new bool[scoreData[0].Time / 10];
 
         scoreSending = false;
 

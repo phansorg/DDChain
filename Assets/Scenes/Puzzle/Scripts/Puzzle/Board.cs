@@ -68,16 +68,26 @@ public class Board : MonoBehaviour
     // Public Function
     //-------------------------------------------------------
     // 特定の幅と高さに盤面を初期化する
-    public void InitializeBoard(int boardWidth, int boardHeight)
+    public void InitializeBoard(int boardWidth, int boardHeight, bool replay)
     {
         DataManager dataManager = DataManager.Instance;
-        machingCount = dataManager.PuzzleData.Link;
-        color = dataManager.PuzzleData.Color;
+        if (replay)
+        {
+            machingCount = dataManager.ReplayData.Link;
+            color = dataManager.ReplayData.Color;
+            countDisp = dataManager.ReplayData.CountDisp;
+            garbage = dataManager.ReplayData.Garbage;
+        }
+        else
+        {
+            machingCount = dataManager.PuzzleData.Link;
+            color = dataManager.PuzzleData.Color;
+            countDisp = dataManager.PuzzleData.CountDisp;
+            garbage = dataManager.PuzzleData.Garbage;
+        }
         colorCount = new int[color];
         score = new int[color];
         chainScore = new int[color];
-        countDisp = dataManager.PuzzleData.CountDisp;
-        garbage = dataManager.PuzzleData.Garbage;
 
         width = boardWidth;
         height = boardHeight;
