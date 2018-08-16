@@ -147,7 +147,8 @@ public class ReplayQueryDropdown : MonoBehaviour {
         ScoreManager scoreManager = ScoreManager.Instance;
         param.ScoreKindValue = scoreKind;
         scoreManager.fetchNewArrivals(scoreKind, param, ReplayController.RANK_MAX);
-        //scoreManager.setNewCol();
+        //scoreManager.setNewCol(false);
+        //scoreManager.setNewCol(true);
     }
 
 }

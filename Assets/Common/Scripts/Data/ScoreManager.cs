@@ -495,11 +495,20 @@ public class ScoreManager : MonoBehaviour
         });
     }
 
-    public void setNewCol()
+    public void setNewCol(bool score)
     {
-        NCMBQuery<NCMBObject> query = new NCMBQuery<NCMBObject>("ScoreDataV1");
+        NCMBQuery<NCMBObject> query;
+        if (score)
+        {
+            query = new NCMBQuery<NCMBObject>("ScoreDataV1");
+        }
+        else
+        {
+            query = new NCMBQuery<NCMBObject>("ReplayDataV1");
+        }
 
-        query.WhereNotEqualTo("ScoreCategoryValue", 0);
+        int[] queryArray = { 0, 1 };
+        query.WhereNotContainedIn("ScoreCategoryValue", queryArray);
 
         query.Limit = 100;
         query.FindAsync((List<NCMBObject> objList, NCMBException e) =>

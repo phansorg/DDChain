@@ -123,7 +123,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 1.08
+  bundleVersion: 1.09
   preloadedAssets: []
   metroInputSource: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -147,8 +147,8 @@ PlayerSettings:
     iOS: com.unity3d.DDChain
     tvOS: 
   buildNumber:
-    iOS: 9
-  AndroidBundleVersionCode: 15
+    iOS: 18
+  AndroidBundleVersionCode: 18
   AndroidMinSdkVersion: 16
   AndroidTargetSdkVersion: 26
   AndroidPreferredInstallLocation: 1
@@ -291,32 +291,52 @@ PlayerSettings:
       m_Icon: {fileID: 0}
       m_Width: 120
       m_Height: 120
-      m_Kind: 0
+      m_Kind: 3
     - serializedVersion: 2
       m_Icon: {fileID: 0}
       m_Width: 80
       m_Height: 80
-      m_Kind: 0
+      m_Kind: 3
     - serializedVersion: 2
       m_Icon: {fileID: 0}
       m_Width: 40
       m_Height: 40
-      m_Kind: 0
+      m_Kind: 3
     - serializedVersion: 2
       m_Icon: {fileID: 0}
       m_Width: 87
       m_Height: 87
-      m_Kind: 0
+      m_Kind: 1
     - serializedVersion: 2
       m_Icon: {fileID: 0}
       m_Width: 58
       m_Height: 58
-      m_Kind: 0
+      m_Kind: 1
     - serializedVersion: 2
       m_Icon: {fileID: 0}
       m_Width: 29
       m_Height: 29
-      m_Kind: 0
+      m_Kind: 1
+    - serializedVersion: 2
+      m_Icon: {fileID: 0}
+      m_Width: 60
+      m_Height: 60
+      m_Kind: 2
+    - serializedVersion: 2
+      m_Icon: {fileID: 0}
+      m_Width: 40
+      m_Height: 40
+      m_Kind: 2
+    - serializedVersion: 2
+      m_Icon: {fileID: 0}
+      m_Width: 20
+      m_Height: 20
+      m_Kind: 2
+    - serializedVersion: 2
+      m_Icon: {fileID: 2800000, guid: a7ad925a571ef254890ea8753edd7276, type: 3}
+      m_Width: 1024
+      m_Height: 1024
+      m_Kind: 4
   m_BuildTargetBatching: []
   m_BuildTargetGraphicsAPIs:
   - m_BuildTarget: AndroidPlayer
